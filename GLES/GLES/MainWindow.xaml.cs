@@ -59,17 +59,18 @@ namespace GLES
         /// <param name="e"></param>
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            // initialise EGL
             m_EglHelper.InitialiseEGLOnWindow(new WindowInteropHelper(this).Handle);
+
+            // set blue clear color
+            GL.ClearColor(0, 0, 1, 1);
 
             // initialise
             m_CurrentDemo.Initialise();
 
             // fire the resize event so demo's can set up their viewport
             m_CurrentDemo.OnResize((int)this.Width, (int)this.Height);
-
-            // set blue clear color
-            GL.ClearColor(0, 0, 1, 1);
-            
+                        
             // start rendering.
             CompositionTarget.Rendering += Render;                    
         }
@@ -86,9 +87,17 @@ namespace GLES
 
             // Render
             m_CurrentDemo.Render();
-            
+
+            // check for errors
+            var ec = GL.GetError();
+            if (ec != ErrorCode.NoError)
+            {
+                System.Diagnostics.Debug.WriteLine(string.Format("GL ERROR {0}", ec));
+            }
+
             // swap
             m_EglHelper.SwapBuffers();
+
             
         }
 

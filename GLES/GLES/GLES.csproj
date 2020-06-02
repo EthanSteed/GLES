@@ -18,4 +18,14 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Shader\basicshader.frag" />
+    <None Remove="Shader\basicshader.vert" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Shader\basicshader.frag" />
+    <EmbeddedResource Include="Shader\basicshader.vert" />
+  </ItemGroup>
+
 </Project>

@@ -3,3 +3,11 @@
 ################################################################################
 
 /GLES/.vs/GLES
+/GLES/GLES/bin/Debug/netcoreapp3.1
+/GLES/GLES/bin/x86/Debug/netcoreapp3.1/GLES.runtimeconfig.json
+/GLES/GLES/bin/x86/Debug/netcoreapp3.1/GLES.runtimeconfig.dev.json
+/GLES/GLES/bin/x86/Debug/netcoreapp3.1/GLES.pdb
+/GLES/GLES/bin/x86/Debug/netcoreapp3.1/GLES.exe
+/GLES/GLES/bin/x86/Debug/netcoreapp3.1/GLES.dll
+/GLES/GLES/bin/x86/Debug/netcoreapp3.1/GLES.deps.json
+/GLES/GLES/obj
