@@ -33,3 +33,6 @@
 /GLES/GLES.Win/bin/x86/Debug/netcoreapp3.1/GLES.Demo.pdb
 /GLES/GLES.Win/bin/x86/Debug/netcoreapp3.1/GLES.Demo.dll
 /GLES/GLES.Win/obj
+/GLES/GLES/bin/Debug/netstandard2.0/GLES.pdb
+/GLES/GLES/bin/Debug/netstandard2.0/GLES.dll
+/GLES/GLES/bin/Debug/netstandard2.0/GLES.deps.json
