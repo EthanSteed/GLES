@@ -56,7 +56,7 @@ namespace GLES.Win
             GL.ClearColor(0, 0, 1, 1);
 
             // initialise
-            m_CurrentDemo = DemoFactory.GetDemo(1);
+            m_CurrentDemo = DemoFactory.GetDemo(2);
             m_CurrentDemo.Initialise();
 
             // fire the resize event so demo's can set up their viewport
