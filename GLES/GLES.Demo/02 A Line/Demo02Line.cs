@@ -139,7 +139,7 @@ namespace GLES.Demo
             GL.VertexAttribPointer(m_Shader.ColorAttribLocation, 4, VertexAttribPointerType.Float, true, Vector4.SizeInBytes, 0);
 
             // Draw Lines
-            GL.DrawArrays(BeginMode.Lines, 0, 8);
+            GL.DrawArrays(BeginMode.LineStrip, 0, 8);
 
             m_Shader.End();
 
