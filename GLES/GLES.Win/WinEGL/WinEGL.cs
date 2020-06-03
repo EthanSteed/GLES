@@ -7,7 +7,7 @@ namespace GLES
     /// You need to ensure the libraries libegl.dll and libglesv2.dll are dropped into your
     /// output folder for this to work. Solution only works in x86 mode on windows.
     /// </summary>
-    public static class EGL
+    public static class WinEGL
     {
         const string Library = "libegl.dll";
 

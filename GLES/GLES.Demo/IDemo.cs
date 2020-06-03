@@ -1,5 +1,5 @@
 ﻿
-namespace GLES.Demos
+namespace GLES.Demo
 {
     public interface IDemo
     {
@@ -18,7 +18,7 @@ namespace GLES.Demos
         /// <summary>
         /// Render. This is called every frame. Hopefully more than 30 FPS
         /// </summary>
-        void Render();
+        void Render(IGLPlatform glp);
 
         /// <summary>
         /// Tidy up and release any structures you are using

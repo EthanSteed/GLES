@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Windows.Markup;
 using GLES.Shader;
 using OpenTK.Graphics;
 using OpenTK.Maths;
 
-namespace GLES.Demos
+namespace GLES.Demo
 {
     /// <summary>
     /// Draws a triangle.
@@ -21,6 +20,9 @@ namespace GLES.Demos
         int m_VertexBuffer;
         int m_ColorBuffer;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public Demo01Triangle()
         {
             m_Shader = new BasicShader();
@@ -29,6 +31,9 @@ namespace GLES.Demos
             m_ModelViewMatrix = Matrix4.Identity;
         }
 
+        /// <summary>
+        /// Initialise
+        /// </summary>
         public void Initialise()
         {            
             // Set the clear color
@@ -85,8 +90,11 @@ namespace GLES.Demos
         /// <summary>
         /// Render
         /// </summary>
-        public void Render()
+        public void Render(IGLPlatform glp)
         {
+            // clear everything.
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
+
             // reset the model view matrix.
             m_ModelViewMatrix = Matrix4.Identity;
 
@@ -122,6 +130,9 @@ namespace GLES.Demos
             { 
                 angle = 0f; 
             };
+
+            // Swap buffers
+            glp.SwapBuffers();
         }
 
         /// <summary>

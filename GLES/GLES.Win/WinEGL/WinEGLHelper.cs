@@ -2,7 +2,7 @@
 
 namespace GLES
 {
-    public class EGLHelper
+    public class WinEGLHelper : IGLPlatform
     {
         private IntPtr m_Display;
         private IntPtr m_Surface;
@@ -16,76 +16,76 @@ namespace GLES
         /// <returns></returns>
         public void InitialiseEGLOnWindow(IntPtr winhandle)
         {
-            m_Display = EGL.GetDisplay(EGL.DEFAULT_DISPLAY);
+            m_Display = WinEGL.GetDisplay(WinEGL.DEFAULT_DISPLAY);
 
             int major, minor;
-            if (!EGL.Initialize(m_Display, out major, out minor))
+            if (!WinEGL.Initialize(m_Display, out major, out minor))
             {
-                int error = EGL.GetError();
+                int error = WinEGL.GetError();
                 throw new InvalidOperationException("Could not initialise graphics. Error code = " + error);
             }
 
-            EGL.BindAPI(EGL.OPENGL_ES_API);
-            if (EGL.GetError() != EGL.SUCCESS)
+            WinEGL.BindAPI(WinEGL.OPENGL_ES_API);
+            if (WinEGL.GetError() != WinEGL.SUCCESS)
             {
                 throw new InvalidOperationException("Could not bind to opengl ES");
             }
 
             int[] configAttributes = new int[]
             {
-                EGL.RED_SIZE, 8,
-                EGL.GREEN_SIZE, 8,
-                EGL.BLUE_SIZE, 8,
-                EGL.ALPHA_SIZE, 8,
-                EGL.DEPTH_SIZE, 24,
-                EGL.STENCIL_SIZE, 8,
-                EGL.SAMPLE_BUFFERS, EGL.DONT_CARE,
-                EGL.NONE
+                WinEGL.RED_SIZE, 8,
+                WinEGL.GREEN_SIZE, 8,
+                WinEGL.BLUE_SIZE, 8,
+                WinEGL.ALPHA_SIZE, 8,
+                WinEGL.DEPTH_SIZE, 24,
+                WinEGL.STENCIL_SIZE, 8,
+                WinEGL.SAMPLE_BUFFERS, WinEGL.DONT_CARE,
+                WinEGL.NONE
             };
 
             IntPtr config;
             int configCount;
-            if (!EGL.ChooseConfig(m_Display, configAttributes, out config, 1, out configCount) || (configCount != 1))
+            if (!WinEGL.ChooseConfig(m_Display, configAttributes, out config, 1, out configCount) || (configCount != 1))
             {
                 throw new InvalidOperationException("Could not choose config");
             }
 
             int[] surfaceAttributes = new int[]{
-                EGL.NONE,
-                EGL.NONE
+                WinEGL.NONE,
+                WinEGL.NONE
             };
 
-            m_Surface = EGL.CreateWindowSurface(m_Display, config, winhandle, surfaceAttributes);
+            m_Surface = WinEGL.CreateWindowSurface(m_Display, config, winhandle, surfaceAttributes);
             if (m_Surface == IntPtr.Zero)
             {
-                EGL.GetError();
-                m_Surface = EGL.CreateWindowSurface(m_Display, config, IntPtr.Zero, null);
+                WinEGL.GetError();
+                m_Surface = WinEGL.CreateWindowSurface(m_Display, config, IntPtr.Zero, null);
             }
 
-            if (EGL.GetError() != EGL.SUCCESS)
+            if (WinEGL.GetError() != WinEGL.SUCCESS)
             {
                 throw new InvalidOperationException("Could not create window surface");
             }
 
             int[] contextAttributes = new int[]
             {
-                EGL.CONTEXT_CLIENT_VERSION, 2, EGL.NONE
+                WinEGL.CONTEXT_CLIENT_VERSION, 2, WinEGL.NONE
             };
 
-            IntPtr context = EGL.CreateContext(m_Display, config, IntPtr.Zero, contextAttributes);
-            if (EGL.GetError() != EGL.SUCCESS)
+            IntPtr context = WinEGL.CreateContext(m_Display, config, IntPtr.Zero, contextAttributes);
+            if (WinEGL.GetError() != WinEGL.SUCCESS)
             {
                 throw new InvalidOperationException("Could not create context");
             }
 
-            EGL.MakeCurrent(m_Display, m_Surface, m_Surface, context);
-            if (EGL.GetError() != EGL.SUCCESS)
+            WinEGL.MakeCurrent(m_Display, m_Surface, m_Surface, context);
+            if (WinEGL.GetError() != WinEGL.SUCCESS)
             {
                 throw new InvalidOperationException("Could not make surface current");
             }
 
             // turn off vsync.
-            EGL.SwapInterval(m_Display, 0);
+            WinEGL.SwapInterval(m_Display, 0);
 
         }
 
@@ -94,7 +94,7 @@ namespace GLES
         /// </summary>
         public void SwapBuffers()
         {
-            EGL.SwapBuffers(m_Display, m_Surface);
+            WinEGL.SwapBuffers(m_Display, m_Surface);
         }
 
     }
