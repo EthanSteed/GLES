@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using GLES.Demo;
@@ -23,8 +24,8 @@ namespace GLES.Win
 
             m_EglHelper = new WinEGLHelper();
 
-            this.Loaded += MainWindow_Loaded;            
-
+            this.Loaded += MainWindow_Loaded;
+            this.KeyDown += new System.Windows.Input.KeyEventHandler(OnKeyDownEvent);
 
         }
 
@@ -55,12 +56,7 @@ namespace GLES.Win
             // set blue clear color
             GL.ClearColor(0, 0, 1, 1);
 
-            // initialise
-            m_CurrentDemo = DemoFactory.GetDemo(2);
-            m_CurrentDemo.Initialise();
-
-            // fire the resize event so demo's can set up their viewport
-            m_CurrentDemo.OnResize((int)this.Width, (int)this.Height);
+            SetCurrentDemo(1);
 
             // link up to any further changes in window size changed.
             this.SizeChanged += MainWindow_SizeChanged;
@@ -72,6 +68,19 @@ namespace GLES.Win
             System.Diagnostics.Debug.WriteLine(string.Format("Initialised in {0}ms", m_Stopwatch.ElapsedMilliseconds));
             m_Stopwatch.Restart();
 
+        }
+
+        /// <summary>
+        /// Set the current demo
+        /// </summary>
+        private void SetCurrentDemo(int demo)
+        {
+            // initialise
+            m_CurrentDemo = DemoFactory.GetDemo(demo);
+            m_CurrentDemo.Initialise();
+
+            // fire the resize event so demo's can set up their viewport
+            m_CurrentDemo.OnResize((int)this.Width, (int)this.Height);
         }
 
         /// <summary>
@@ -100,6 +109,34 @@ namespace GLES.Win
                 m_Stopwatch.Restart();
             }
 
+        }
+
+        /// <summary>
+        /// On Key down Event
+        /// </summary>
+        private void OnKeyDownEvent(object sender, KeyEventArgs e)
+        {
+            Key key = e.Key;
+
+            switch(key)
+            {
+                // Key 1
+                case Key.D1:
+
+                    // Finish Current Demo
+                    m_CurrentDemo.Finish();
+
+                    SetCurrentDemo(1);
+                    break;
+                // Key 2
+                case Key.D2:
+
+                    // Finish Current Demo
+                    m_CurrentDemo.Finish();
+
+                    SetCurrentDemo(2);
+                    break;
+            }
         }
 
         // Frames per second check.
