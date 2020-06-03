@@ -116,27 +116,13 @@ namespace GLES.Win
         /// </summary>
         private void OnKeyDownEvent(object sender, KeyEventArgs e)
         {
-            Key key = e.Key;
+            int id = e.Key - Key.D0;
 
-            switch(key)
-            {
-                // Key 1
-                case Key.D1:
+            // Finish Current Demo
+            m_CurrentDemo.Finish();
 
-                    // Finish Current Demo
-                    m_CurrentDemo.Finish();
-
-                    SetCurrentDemo(1);
-                    break;
-                // Key 2
-                case Key.D2:
-
-                    // Finish Current Demo
-                    m_CurrentDemo.Finish();
-
-                    SetCurrentDemo(2);
-                    break;
-            }
+            // id passed - Default Demo used if id out of range
+            SetCurrentDemo(id);
         }
 
         // Frames per second check.
