@@ -66,9 +66,6 @@ namespace GLES.Shader
         {
             base.Begin();
 
-            // ensure vertex and color attrib arrays are enabled.
-            GL.EnableVertexAttribArray(VertexAttribLocation);
-            GL.EnableVertexAttribArray(ColorAttribLocation);
         }
 
 

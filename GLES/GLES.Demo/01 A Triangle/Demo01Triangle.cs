@@ -111,10 +111,16 @@ namespace GLES.Demo
             // bind to our buffers and tell the shader where to look for the data.
 
             // first the vertices
+
+            // ensure vertex and color attrib arrays are enabled.
+            GL.EnableVertexAttribArray(m_Shader.VertexAttribLocation);            
+            
             GL.BindBuffer(BufferTarget.ArrayBuffer, m_VertexBuffer);
             GL.VertexAttribPointer(m_Shader.VertexAttribLocation, 3, VertexAttribPointerType.Float, true, Vector3.SizeInBytes, 0);
 
             // now the colours
+            GL.EnableVertexAttribArray(m_Shader.ColorAttribLocation);
+
             GL.BindBuffer(BufferTarget.ArrayBuffer, m_ColorBuffer);
             GL.VertexAttribPointer(m_Shader.ColorAttribLocation, 4, VertexAttribPointerType.Float, true, Vector4.SizeInBytes, 0);
 
