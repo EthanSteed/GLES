@@ -19,6 +19,9 @@ namespace GLES.Demo
                 case 1:
                     demo = new Demo01Triangle();
                     break;
+                case 2:
+                    demo = new Demo02Line();
+                    break;
                 default:
                     demo = new Demo01Triangle();
                     break;
