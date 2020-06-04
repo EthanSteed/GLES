@@ -129,7 +129,8 @@ namespace GLES.Win
         /// </summary>
         private void OnKeyDownEvent(object sender, KeyEventArgs e)
         {
-            int id = e.Key - Key.D0;
+            // check for numpad keys as well as normal number keys.
+            int id = (e.Key > Key.NumPad0)  ? e.Key - Key.NumPad0 : e.Key - Key.D0;
 
             // Finish Current Demo
             m_CurrentDemo.Finish();
