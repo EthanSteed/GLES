@@ -80,18 +80,32 @@ namespace GLES.Win
             m_CurrentDemo.Initialise();
 
             // fire the resize event so demo's can set up their viewport
-            m_CurrentDemo.OnResize((int)this.Width, (int)this.Height);
+            m_CurrentDemo.OnResize((int)this.ActualWidth, (int)this.ActualHeight);
         }
 
         /// <summary>
         /// link into render event.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void Render(object sender, EventArgs e)
         {
+            // clear everything.            
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
+
             // Render
-            m_CurrentDemo.Render(m_EglHelper);
+            m_CurrentDemo.Render();
+
+            // swap buffers
+            m_EglHelper.SwapBuffers();
+
+            // check for errors and calculate FPS
+            DoRenderStats();
+        }
+
+        /// <summary>
+        /// DoRenderStats
+        /// </summary>
+        private void DoRenderStats()
+        {
 
             // check for errors
             var ec = GL.GetError();
@@ -108,7 +122,6 @@ namespace GLES.Win
                 m_Fps = 0;
                 m_Stopwatch.Restart();
             }
-
         }
 
         /// <summary>

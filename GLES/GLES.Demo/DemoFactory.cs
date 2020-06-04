@@ -22,6 +22,9 @@ namespace GLES.Demo
                 case 2:
                     demo = new Demo02Line();
                     break;
+                case 3:
+                    demo = new Demo03Viewports();
+                    break;
                 default:
                     demo = new Demo01Triangle();
                     break;
