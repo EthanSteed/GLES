@@ -8,6 +8,7 @@ namespace GLES.Demo
     /// <summary>
     /// Demo 03 Viewports
     /// </summary>
+    [Demo(3, "Multiple viewports")]
     public class Demo03Viewports : IDemo
     {
         Demo01Triangle m_Demo01;

@@ -8,6 +8,7 @@ namespace GLES.Demo
     /// <summary>
     /// Draws a triangle.
     /// </summary>
+    [Demo(1, "Draw a basic triangle")]
     public class Demo01Triangle : IDemo
     {
 

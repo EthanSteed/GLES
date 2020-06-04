@@ -10,6 +10,7 @@ namespace GLES.Demo
     /// <summary>
     /// Demo 02 Line
     /// </summary>
+    [Demo(2, "Draw some lines")]
     public class Demo02Line : IDemo
     {
         Matrix4 m_ProjectionMatrix;

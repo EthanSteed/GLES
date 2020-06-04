@@ -1,13 +1,14 @@
 ﻿using System.Reflection;
+using GLES.Shader;
 using OpenTK.Graphics;
 using OpenTK.Maths;
 
-namespace GLES.Shader
+namespace GLES.Demo
 {
     /// <summary>
-    /// A basic shader. 
+    /// Create shader for textures
     /// </summary>
-    public class BasicShader : ShaderBase
+    public class TextureShader : ShaderBase
     {
         /// <summary>
         /// The vertex attrib location
@@ -15,9 +16,9 @@ namespace GLES.Shader
         public int VertexAttribLocation { get; set; }
 
         /// <summary>
-        /// The color attrib location
+        /// Texture Coord attrib location
         /// </summary>
-        public int ColorAttribLocation { get; set; }
+        public int TextureCoordAttribLocation { get; set; }
 
         /// <summary>
         /// location for the projection matrix
@@ -37,20 +38,27 @@ namespace GLES.Shader
             try
             {
                 string fs;
-                EmbeddedResourceHelper.GetEmbeddedFileAsString(Assembly.GetExecutingAssembly(), "basicshader.frag", out fs);
+                EmbeddedResourceHelper.GetEmbeddedFileAsString(Assembly.GetExecutingAssembly(), "textureshader.frag", out fs);
 
                 string vs;
-                EmbeddedResourceHelper.GetEmbeddedFileAsString(Assembly.GetExecutingAssembly(), "basicshader.vert", out vs);
+                EmbeddedResourceHelper.GetEmbeddedFileAsString(Assembly.GetExecutingAssembly(), "textureshader.vert", out vs);
 
                 base.Initialise(fs, vs);
 
                 // get attribute locations
                 VertexAttribLocation = GL.GetAttribLocation(m_Program, "aVert");
-                ColorAttribLocation = GL.GetAttribLocation(m_Program, "aColor");
-                
+                TextureCoordAttribLocation = GL.GetAttribLocation(m_Program, "aTexCoord");
+
                 // get uniform locations
                 ProjectionMatrixLocation = GL.GetUniformLocation(m_Program, "uProjection_matrix");
                 ModelViewMatrixLocation = GL.GetUniformLocation(m_Program, "uModelview_matrix");
+
+                // get the texture sampler location
+                int slot0 = GL.GetUniformLocation(m_Program, "uTexSlot0");
+
+                // map this to texture unit 0
+                GL.Uniform1(slot0, 0);
+
 
             }
             catch (ShaderException se)
@@ -58,6 +66,15 @@ namespace GLES.Shader
                 System.Diagnostics.Debug.WriteLine(se.Message);
             }
 
+        }
+
+        /// <summary>
+        /// Set which texture slot to use.
+        /// </summary>
+        /// <param name="slot"></param>
+        public void SetTextureSlot(int slot)
+        {
+            
         }
 
         /// <summary>

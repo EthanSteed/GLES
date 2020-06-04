@@ -6,7 +6,7 @@ namespace GLES.Shader
     /// <summary>
     /// Base class for all shaders
     /// </summary>
-    public abstract class Shader
+    public abstract class ShaderBase
     {
         private const int GL_SUCCESS = 1;
 
@@ -16,10 +16,11 @@ namespace GLES.Shader
 
         protected int m_Program;
 
+
         /// <summary>
         /// Constructor
         /// </summary>
-        public Shader()
+        public ShaderBase()
         {
         }
 

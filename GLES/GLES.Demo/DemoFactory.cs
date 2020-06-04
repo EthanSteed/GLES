@@ -1,4 +1,9 @@
 ﻿
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+using GLES.Demo._04_Texture;
+
 namespace GLES.Demo
 {
     /// <summary>
@@ -6,32 +11,41 @@ namespace GLES.Demo
     /// </summary>
     public static class DemoFactory
     {
+
         /// <summary>
         /// Gets the required demo
         /// </summary>
         public static IDemo GetDemo(int num)
         {
             IDemo demo = null;
+            
+            var assembly = Assembly.GetExecutingAssembly();
 
-            // return the required demo.
-            switch (num)
+            // use reflection to find all classes tagged with DemoAttribute            
+            foreach (Type t in assembly.GetTypes())
             {
-                case 1:
-                    demo = new Demo01Triangle();
+                var att = t.GetCustomAttribute<DemoAttribute>();
+
+                if (att != null && att.Id == num)
+                {
+                    demo = Activator.CreateInstance(t) as IDemo;
                     break;
-                case 2:
-                    demo = new Demo02Line();
-                    break;
-                case 3:
-                    demo = new Demo03Viewports();
-                    break;
-                default:
-                    demo = new Demo01Triangle();
-                    break;
+                }
+            }
+
+            // if we haven't found the demo class with the id we want then just
+            // default to first demo.
+            if (demo == null)
+            {
+                demo = new Demo01Triangle();
             }
 
             return demo;
         }
+
+
+
+
 
     }
 }
