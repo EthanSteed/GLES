@@ -31,6 +31,11 @@ namespace GLES.Demo
         public int ModelViewMatrixLocation { get; set; }
 
         /// <summary>
+        /// Location for the texture slot to use
+        /// </summary>
+        private int TextureSlotLocation { get; set; }
+
+        /// <summary>
         /// Initialise the shader
         /// </summary>
         public void Initialise()
@@ -54,12 +59,7 @@ namespace GLES.Demo
                 ModelViewMatrixLocation = GL.GetUniformLocation(m_Program, "uModelview_matrix");
 
                 // get the texture sampler location
-                int slot0 = GL.GetUniformLocation(m_Program, "uTexSlot0");
-
-                // map this to texture unit 0
-                GL.Uniform1(slot0, 0);
-
-
+                TextureSlotLocation = GL.GetUniformLocation(m_Program, "uTexSlot0");
             }
             catch (ShaderException se)
             {
@@ -74,7 +74,8 @@ namespace GLES.Demo
         /// <param name="slot"></param>
         public void SetTextureSlot(int slot)
         {
-            
+            // tell the shader what slot we want to read the texture data from.
+            GL.Uniform1(TextureSlotLocation, slot);
         }
 
         /// <summary>

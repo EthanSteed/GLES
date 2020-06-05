@@ -9,10 +9,10 @@ namespace GLES.Demo
     /// Demo 03 Viewports
     /// </summary>
     [Demo(3, "Multiple viewports")]
-    public class Demo03Viewports : IDemo
+    public class ViewportDemo : IDemo
     {
-        Demo01Triangle m_Demo01;
-        Demo02Line m_Demo02;
+        TriangleDemo m_Demo01;
+        LineDemo m_Demo02;
 
         int m_WindowWidth = 500;
         int m_WindowHeight = 500;
@@ -20,10 +20,10 @@ namespace GLES.Demo
         /// <summary>
         /// Constructor
         /// </summary>
-        public Demo03Viewports()
+        public ViewportDemo()
         {
-            m_Demo01 = new Demo01Triangle();
-            m_Demo02 = new Demo02Line();
+            m_Demo01 = new TriangleDemo();
+            m_Demo02 = new LineDemo();
         }
 
         /// <summary>

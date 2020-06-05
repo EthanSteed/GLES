@@ -37,7 +37,7 @@ namespace GLES.Demo
             // default to first demo.
             if (demo == null)
             {
-                demo = new Demo01Triangle();
+                demo = new TriangleDemo();
             }
 
             return demo;

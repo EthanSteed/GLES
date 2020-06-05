@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
-using GLES.Shader;
 using OpenTK.Graphics;
 using OpenTK.Maths;
 
 namespace GLES.Demo._04_Texture
 {
     [Demo(4, "Applying a textures")]
-    public class Demo04Texture : IDemo
+    public class TextureDemo : IDemo
     {
         Matrix4 m_ProjectionMatrix;
         Matrix4 m_ModelViewMatrix;
@@ -24,7 +21,7 @@ namespace GLES.Demo._04_Texture
         /// <summary>
         /// Constructor
         /// </summary>
-        public Demo04Texture()
+        public TextureDemo()
         {
             m_Shader = new TextureShader();
 
@@ -158,15 +155,23 @@ namespace GLES.Demo._04_Texture
             GL.BindBuffer(BufferTarget.ArrayBuffer, m_TexCoordBuffer);
             GL.VertexAttribPointer(m_Shader.TextureCoordAttribLocation, 2, VertexAttribPointerType.Float, true, Vector2.SizeInBytes, 0);
 
-            // bind our texture into slot 0            
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, m_Texture1);           
+            // bind our texture into slot 0. Try changing this so the shader looks at texture slot 5. You will notice
+            // that the texture goes black. To fix it we then set the ActiveTexture to 5 and bind our texture data into 
+            // it..
+            m_Shader.SetTextureSlot(3);
+            GL.ActiveTexture(TextureUnit.Texture3);
+            GL.BindTexture(TextureTarget.Texture2D, m_Texture1);
+            
 
             // draw a quad (made up of two triangles)
             GL.DrawArrays(BeginMode.TriangleStrip, 0, 4);
 
             // finished with the shader.
             m_Shader.End();
+
+            // this will clear the texture data from the slot were are using. If we don't do this our texture
+            // data will be left in the slot and could interfere with other drawing we are doing elsewhere.
+            GL.BindTexture(TextureTarget.Texture2D, 0);
 
             // increment our rotation
             angle += 1;
