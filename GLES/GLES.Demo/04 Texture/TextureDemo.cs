@@ -93,7 +93,7 @@ namespace GLES.Demo._04_Texture
             // load the image data into the texture target.
             byte[] imgdata;
             EmbeddedResourceHelper.GetEmbeddedFileAsBytes(Assembly.GetExecutingAssembly(), "texturedemo.bmp", out imgdata);
-
+                      
             unsafe
             {
                 fixed (byte* p = imgdata)
@@ -161,7 +161,7 @@ namespace GLES.Demo._04_Texture
             m_Shader.SetTextureSlot(3);
             GL.ActiveTexture(TextureUnit.Texture3);
             GL.BindTexture(TextureTarget.Texture2D, m_Texture1);
-            
+
 
             // draw a quad (made up of two triangles)
             GL.DrawArrays(BeginMode.TriangleStrip, 0, 4);
