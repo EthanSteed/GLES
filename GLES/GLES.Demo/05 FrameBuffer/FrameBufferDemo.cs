@@ -9,6 +9,8 @@ namespace GLES.Demo
     [Demo(5, "Frame Buffer")]
     public class FrameBufferDemo : IDemo
     {
+        const int FRAME_BUFFER_DIM = 500;
+
         int m_Width, m_Height;
 
         Matrix4 m_ProjectionMatrix;
@@ -75,14 +77,14 @@ namespace GLES.Demo
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
             
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, 256, 256, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, FRAME_BUFFER_DIM, FRAME_BUFFER_DIM, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
 
             // attach to the frame buffer
             GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferSlot.ColorAttachment0, TextureTarget.Texture2D, m_FboColorTexture, 0);
 
             // create depth buffer
             GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, m_FboDepthBuffer);
-            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferInternalFormat.DepthComponent16, 256, 256);
+            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferInternalFormat.DepthComponent16, FRAME_BUFFER_DIM, FRAME_BUFFER_DIM);
             GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, 0);
 
             // attach to the frame buffer.
@@ -168,7 +170,7 @@ namespace GLES.Demo
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             // render the triangle from the triangle demo onto our frame buffer.
-            m_TriangleDemo.OnResize(256, 256);
+            m_TriangleDemo.OnResize(FRAME_BUFFER_DIM, FRAME_BUFFER_DIM);
             m_TriangleDemo.Render();
 
             //
