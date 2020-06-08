@@ -25,9 +25,10 @@ namespace GLES.Win
             m_EglHelper = new WinEGLHelper();
 
             this.Loaded += MainWindow_Loaded;
-            this.KeyDown += new System.Windows.Input.KeyEventHandler(OnKeyDownEvent);
-
+            this.TextInput += MainWindow_TextInput;
+            
         }
+
 
         /// <summary>
         /// Called when user resizes the window
@@ -56,8 +57,8 @@ namespace GLES.Win
             // set blue clear color
             GL.ClearColor(0, 0, 1, 1);
 
-            SetCurrentDemo(1);
-
+            SetCurrentDemo('1');
+                
             // link up to any further changes in window size changed.
             this.SizeChanged += MainWindow_SizeChanged;
 
@@ -73,10 +74,10 @@ namespace GLES.Win
         /// <summary>
         /// Set the current demo
         /// </summary>
-        private void SetCurrentDemo(int demo)
+        private void SetCurrentDemo(char id)
         {
             // initialise
-            m_CurrentDemo = DemoFactory.GetDemo(demo);
+            m_CurrentDemo = DemoFactory.GetDemo(id);
             m_CurrentDemo.Initialise();
 
             // fire the resize event so demo's can set up their viewport
@@ -124,19 +125,28 @@ namespace GLES.Win
             }
         }
 
+
         /// <summary>
-        /// On Key down Event
+        /// Listen to text input to the main window (E.g. key presses)
         /// </summary>
-        private void OnKeyDownEvent(object sender, KeyEventArgs e)
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MainWindow_TextInput(object sender, TextCompositionEventArgs e)
         {
-            // check for numpad keys as well as normal number keys.
-            int id = (e.Key > Key.NumPad0)  ? e.Key - Key.NumPad0 : e.Key - Key.D0;
+            if (!string.IsNullOrWhiteSpace(e.Text))
+            {
+                // if not handled by current demo.
+                if (!m_CurrentDemo.HandleKeyPress(e.Text[0]))
+                {
 
-            // Finish Current Demo
-            m_CurrentDemo.Finish();
+                    // Finish Current Demo
+                    m_CurrentDemo.Finish();
 
-            // id passed - Default Demo used if id out of range
-            SetCurrentDemo(id);
+                    // id passed - Default Demo used if id out of range
+                    SetCurrentDemo(e.Text[0]);
+                }
+            }
+
         }
 
         // Frames per second check.

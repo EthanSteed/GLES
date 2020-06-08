@@ -12,16 +12,16 @@ namespace GLES.Demo
         /// <summary>
         /// Constructor
         /// </summary>
-        public DemoAttribute(int id, string description)
+        public DemoAttribute(char id, string description)
         {
             Id = id;
             Description = description;
         }
 
-        /// <summary>
-        /// ID for this demo
+            /// <summary>
+        /// the id for this demo
         /// </summary>
-        public int Id { get; set; }
+        public char Id { get; set; }
 
         /// <summary>
         /// Description of this demo

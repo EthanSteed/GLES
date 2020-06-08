@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 using GLES.Fonts;
 using OpenTK.Graphics;
-using OpenTK.Maths;
 
 namespace GLES.Demo
 {
@@ -12,16 +9,26 @@ namespace GLES.Demo
     /// <summary>
     /// FontDemo
     /// </summary>
-    [Demo('6', "Font demo")]
-    public class FontDemo : DemoBase
+    [Demo('7', "Font Valve demo")]
+    public class FontValveDemo : DemoBase
     {
+        const int TEX_WIDTH = 256;
+        const int TEX_HEIGHT = 256;
+
         int m_FontTexture;
 
         FontShader m_Shader;
 
+        float m_AlphaTest = 0;
+
         int m_CoordBuffer;
 
-        public FontDemo()
+        enum RenderMode { Glyph, Monochrome, SDFRaw }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public FontValveDemo()
         {
             m_Shader = new FontShader();
         }
@@ -47,21 +54,18 @@ namespace GLES.Demo
             GL.BindTexture(TextureTarget.Texture2D, m_FontTexture);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-
+                        
             // Bitmap data is just 1 byte. For OpenGL we could use GL_RED. but in ES we use Luminance.
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Alpha, 512, 256, 0, PixelFormat.Alpha, PixelType.UnsignedByte, IntPtr.Zero);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Alpha, TEX_WIDTH, TEX_HEIGHT, 0, PixelFormat.Alpha, PixelType.UnsignedByte, IntPtr.Zero);
 
             // load buffers for displaying a texture.
             LoadBuffers();
 
             // load a unicode font .
-            FreeType.TryLoadFont(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\arialuni.ttf", 12);
-            
+            FreeType.TryLoadFont(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\arialuni.ttf", 250);
+
             // write some messages.
-            LoadFontChars(10, 50, "Hello there");
-            LoadFontChars(10, 75, "This has got some こんにちは unicode characters");
-            LoadFontChars(10, 100, "But you have to make sure you use a unicode font set");
-            LoadFontChars(10, 125, "We are using arialuni.ttf");
+            LoadFontChars(RenderMode.Glyph,  10, TEX_HEIGHT-10, "A");
 
 
         }
@@ -71,12 +75,15 @@ namespace GLES.Demo
         /// </summary>
         private void LoadBuffers()
         {
+            int w2 = TEX_WIDTH / 2;
+            int h2 = TEX_HEIGHT / 2;
+            
             // Load Vertex Buffer.
             float[] coords = new float[] {
-                -256,   128,  1,  0, 0,
-                 256,   128,  1,  1, 0,
-                -256,  -128,  1,  0, 1,
-                 256,  -128,  1,  1, 1
+                 -w2,  h2,  1,  0, 0,
+                  w2,  h2,  1,  1, 0,
+                 -w2, -h2,  1,  0, 1,
+                  w2, -h2,  1,  1, 1,        
             };
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, m_CoordBuffer);
@@ -87,8 +94,10 @@ namespace GLES.Demo
         /// <summary>
         /// Load characters
         /// </summary>
-        private void LoadFontChars(int x, int y, string msg)
+        private void LoadFontChars(RenderMode mode, int x, int y, string msg)
         {
+            byte[] texdata = new byte[TEX_WIDTH * TEX_HEIGHT];
+
             // Loop each character in the message
             foreach (var c in msg)
             {
@@ -96,15 +105,35 @@ namespace GLES.Demo
                 GlyphInfo glyph;
                 if (FreeType.TryGetCharBitmap(c, out glyph))
                 {
+
                     // load bitmap data if any available (space doesn't have one of course).
                     if (glyph.BitmapData.Length > 0)
                     {
-                        unsafe
+                        int xst = x + glyph.X;
+                        int yst = y - glyph.Y;
+
+                        // copy glyph data.
+                        for (int i = 0; i < glyph.Width; i++)
                         {
-                            fixed (byte* p = glyph.BitmapData)
+                            for (int j = 0; j < glyph.Height; j++)
                             {
-                                // Use text sub image 2D to write this bitmap data into our texture.
-                                GL.TexSubImage2D(TextureTarget.Texture2D, 0, x + glyph.X, y - glyph.Y, glyph.Width, glyph.Height, PixelFormat.Alpha, PixelType.UnsignedByte, (IntPtr)p);
+                                byte pixel = glyph.BitmapData[(j * glyph.Width) + i];
+
+                                // convert to binary.
+                                if (mode != RenderMode.Glyph)
+                                {
+                                    if (pixel > 0x7F)
+                                    {
+                                        pixel = 0xFF;
+                                    }
+                                    else if (pixel > 0)
+                                    {
+                                        pixel = 0x00;
+                                    }
+                                }
+
+                                // set corresponding texel.
+                                texdata[((yst + j) * TEX_WIDTH) + (xst + i)] = pixel;
                             }
                         }
                     }
@@ -113,8 +142,65 @@ namespace GLES.Demo
                     x += glyph.AdvanceX;
                     y += glyph.AdvanceY;
                 }
+
+                if (mode == RenderMode.SDFRaw)
+                {
+                    float[,] sdf;
+                    SDFHelper.GenerateSDFTexture(texdata, TEX_WIDTH, TEX_HEIGHT, out sdf);
+
+                    texdata = SDFHelper.NormaliseSDFTexture(sdf, TEX_WIDTH, TEX_HEIGHT);
+                }
+
+                // Load data up to texture.
+                unsafe
+                {
+                    fixed (byte* p = texdata)
+                    {
+                        GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Alpha, TEX_WIDTH, TEX_HEIGHT, 0, PixelFormat.Alpha, PixelType.UnsignedByte, (IntPtr)p);
+                    }
+                }
             }
 
+         
+
+
+        }
+
+        /// <summary>
+        /// Handle key press
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public override bool HandleKeyPress(char key)
+        {
+            bool handled = true;
+
+            switch (key)
+            {
+                case 'q':
+                    LoadFontChars(RenderMode.Glyph, 10, TEX_HEIGHT - 10, "A");
+                    m_AlphaTest = 0f;
+                    break;
+                case 'w':
+                    LoadFontChars(RenderMode.Monochrome, 10, TEX_HEIGHT - 10, "A");
+                    m_AlphaTest = 0f;
+                    break;
+                case 'e':
+                    LoadFontChars(RenderMode.SDFRaw, 10, TEX_HEIGHT - 10, "A");
+                    m_AlphaTest = 0f;
+                    break;
+                case 'r':
+                    LoadFontChars(RenderMode.SDFRaw, 10, TEX_HEIGHT - 10, "A");
+                    m_AlphaTest = 0.5f;
+                    break;
+
+
+                default:
+                    handled = false;
+                    break;
+            }
+
+            return handled;
         }
 
 
@@ -126,13 +212,13 @@ namespace GLES.Demo
             // begin using the shader. 
             m_Shader.Begin();
 
-            // we need to setup blending in order to use the alpha channel.
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.One);
 
             // update the model and projection matrix
             m_Shader.UpdateProjectionMatrix(m_ProjectionMatrix);
             m_Shader.UpdateModelViewMatrix(m_ModelViewMatrix);
+            m_Shader.UpdateAlphaTest(m_AlphaTest);
 
             // ensure vertex and color attrib arrays are enabled.
             GL.EnableVertexAttribArray(m_Shader.VertexAttribLocation);
@@ -150,7 +236,7 @@ namespace GLES.Demo
             GL.DrawArrays(BeginMode.TriangleStrip, 0, 4);
 
             GL.Disable(EnableCap.Blend);
-
+            
             // finished with the shader.
             m_Shader.End();
 
@@ -161,8 +247,6 @@ namespace GLES.Demo
         /// </summary>
         public override void Finish()
         {
-            base.Finish();
-
             GL.DeleteBuffers(1, ref m_CoordBuffer);
             GL.DeleteTextures(1, ref m_FontTexture);
 

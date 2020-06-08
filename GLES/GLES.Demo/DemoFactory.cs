@@ -15,7 +15,7 @@ namespace GLES.Demo
         /// <summary>
         /// Gets the required demo
         /// </summary>
-        public static IDemo GetDemo(int num)
+        public static IDemo GetDemo(char id)
         {
             IDemo demo = null;
             
@@ -26,7 +26,7 @@ namespace GLES.Demo
             {
                 var att = t.GetCustomAttribute<DemoAttribute>();
 
-                if (att != null && att.Id == num)
+                if (att != null && att.Id == id)
                 {
                     demo = Activator.CreateInstance(t) as IDemo;
                     break;

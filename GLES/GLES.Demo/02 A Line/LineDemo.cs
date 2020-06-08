@@ -10,7 +10,7 @@ namespace GLES.Demo
     /// <summary>
     /// Demo 02 Line
     /// </summary>
-    [Demo(2, "Draw some lines")]
+    [Demo('2', "Draw some lines")]
     public class LineDemo : IDemo
     {
         Matrix4 m_ProjectionMatrix;
@@ -111,6 +111,15 @@ namespace GLES.Demo
             // the ortho coordinate system will still be the same as above. Best thing to do
             // is to experiment changing the viewport width / height to see the effects.
             GL.Viewport(0, 0, width, height); ;
+        }
+
+        /// <summary>
+        /// Handle key press. (Not used)
+        /// </summary>
+        /// <param name="key"></param>
+        public bool HandleKeyPress(char key)
+        {
+            return false;
         }
 
         /// <summary>

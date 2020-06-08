@@ -16,6 +16,11 @@ namespace GLES.Demo
         void OnResize(int width, int height);
 
         /// <summary>
+        /// Allow demo to handle key press.
+        /// </summary>
+        bool HandleKeyPress(char key);
+
+        /// <summary>
         /// Render. This is called every frame. Hopefully more than 30 FPS
         /// </summary>
         void Render();

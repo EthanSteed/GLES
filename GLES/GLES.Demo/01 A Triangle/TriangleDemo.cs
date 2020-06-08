@@ -8,7 +8,7 @@ namespace GLES.Demo
     /// <summary>
     /// Draws a triangle.
     /// </summary>
-    [Demo(1, "Draw a basic triangle")]
+    [Demo('1', "Draw a basic triangle")]
     public class TriangleDemo : IDemo
     {
 
@@ -94,6 +94,15 @@ namespace GLES.Demo
             // the ortho coordinate system will still be the same as above. Best thing to do
             // is to experiment changing the viewport width / height to see the effects.
             GL.Viewport(0, 0, width, height);
+        }
+
+        /// <summary>
+        /// Handle key press. (Not used)
+        /// </summary>
+        /// <param name="key"></param>
+        public bool HandleKeyPress(char key)
+        {
+            return false;
         }
 
 

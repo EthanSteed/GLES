@@ -6,15 +6,12 @@ using OpenTK.Maths;
 
 namespace GLES.Demo
 {
-    [Demo(5, "Frame Buffer")]
-    public class FrameBufferDemo : IDemo
+    [Demo('5', "Frame Buffer")]
+    public class FrameBufferDemo : DemoBase
     {
         const int FRAME_BUFFER_DIM = 500;
 
         int m_Width, m_Height;
-
-        Matrix4 m_ProjectionMatrix;
-        Matrix4 m_ModelViewMatrix;
 
         TriangleDemo m_TriangleDemo ;
 
@@ -35,16 +32,15 @@ namespace GLES.Demo
             m_TriangleDemo = new TriangleDemo();
 
             m_Shader = new TextureShader();
-
-            m_ProjectionMatrix = Matrix4.Identity;
-            m_ModelViewMatrix = Matrix4.Identity;
         }
 
         /// <summary>
         /// Initialise
         /// </summary>
-        public void Initialise()
+        public override void Initialise()
         {
+            base.Initialise();
+
             m_TriangleDemo.Initialise();
 
             m_Shader.Initialise();
@@ -131,7 +127,7 @@ namespace GLES.Demo
         /// <summary>
         /// Window has resized
         /// </summary>
-        public void OnResize(int width, int height)
+        public override void OnResize(int width, int height)
         {
             m_Width = width;
             m_Height = height;
@@ -155,7 +151,7 @@ namespace GLES.Demo
         /// <summary>
         /// Render
         /// </summary>
-        public void Render()
+        public override void Render()
         {
             // 
             // First Render to our frame buffer.
@@ -231,7 +227,7 @@ namespace GLES.Demo
         /// <summary>
         /// Finish
         /// </summary>
-        public void Finish()
+        public override void Finish()
         {
             m_TriangleDemo.Finish();
 

@@ -8,7 +8,7 @@ namespace GLES.Demo
     /// <summary>
     /// Demo 03 Viewports
     /// </summary>
-    [Demo(3, "Multiple viewports")]
+    [Demo('3', "Multiple viewports")]
     public class ViewportDemo : IDemo
     {
         TriangleDemo m_Demo01;
@@ -51,6 +51,15 @@ namespace GLES.Demo
             // GL coordinate units 1 to 1 with the window pixels
             m_Demo01.OnResize(width/2, height);
             m_Demo02.OnResize(width/2, height);
+        }
+
+        /// <summary>
+        /// Handle key press. (Not used)
+        /// </summary>
+        /// <param name="key"></param>
+        public bool HandleKeyPress(char key)
+        {
+            return false;
         }
 
         /// <summary>
