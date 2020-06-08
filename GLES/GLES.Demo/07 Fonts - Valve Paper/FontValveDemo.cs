@@ -62,10 +62,11 @@ namespace GLES.Demo
             LoadBuffers();
 
             // load a unicode font .
-            FreeType.TryLoadFont(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\arialuni.ttf", 250);
-
-            // write some messages.
-            LoadFontChars(RenderMode.Glyph,  10, TEX_HEIGHT-10, "A");
+            if (FreeType.TryLoadFont(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "arialuni.ttf"), 250))
+            {
+                // write some messages.
+                LoadFontChars(RenderMode.Glyph, 10, TEX_HEIGHT - 10, "A");
+            }
 
 
         }

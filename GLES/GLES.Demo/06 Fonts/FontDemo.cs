@@ -55,15 +55,18 @@ namespace GLES.Demo
             LoadBuffers();
 
             // load a unicode font .
-            FreeType.TryLoadFont(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\arialuni.ttf", 12);
-            
-            // write some messages.
-            LoadFontChars(10, 50, "Hello there");
-            LoadFontChars(10, 75, "This has got some こんにちは unicode characters");
-            LoadFontChars(10, 100, "But you have to make sure you use a unicode font set");
-            LoadFontChars(10, 125, "We are using arialuni.ttf");
-
-
+            if (FreeType.TryLoadFont(System.IO.Path.Combine( System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),"arialuni.ttf"), 12))
+            {
+                // write some messages.
+                LoadFontChars(10, 50, "Hello there");
+                LoadFontChars(10, 75, "This has got some こんにちは unicode characters");
+                LoadFontChars(10, 100, "But you have to make sure you use a unicode font set");
+                LoadFontChars(10, 125, "We are using arialuni.ttf");
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("Could not load fonts");
+            }
         }
 
         /// <summary>
@@ -107,6 +110,7 @@ namespace GLES.Demo
                                 GL.TexSubImage2D(TextureTarget.Texture2D, 0, x + glyph.X, y - glyph.Y, glyph.Width, glyph.Height, PixelFormat.Alpha, PixelType.UnsignedByte, (IntPtr)p);
                             }
                         }
+
                     }
 
                     // move on to the next character.
@@ -127,7 +131,7 @@ namespace GLES.Demo
             m_Shader.Begin();
 
             // we need to setup blending in order to use the alpha channel.
-            GL.Enable(EnableCap.Blend);
+            //GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.One);
 
             // update the model and projection matrix

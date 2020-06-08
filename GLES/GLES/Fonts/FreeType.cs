@@ -11,7 +11,7 @@ namespace GLES.Fonts
     /// </summary>
     public static class FreeType
     {
-        private const string DLL_NAME = "freetype6";
+        private const string DLL_NAME = "freetype";
 
         private const int SUCCESS = 0;
 
@@ -26,6 +26,8 @@ namespace GLES.Fonts
         /// </summary>
         public static bool TryLoadFont(string filepath, int pt, uint dpx = 96, uint dpy = 96)
         {
+            System.Diagnostics.Debug.WriteLine(string.Format("Trying to open font file : {0}", filepath));
+
             int err = SUCCESS;
 
             if (m_Lib == IntPtr.Zero)

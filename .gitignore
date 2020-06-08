@@ -38,3 +38,5 @@
 /GLES/GLES/bin/Debug/netstandard2.0/GLES.deps.json
 /GLES/GLES.Win/GLES.Win.csproj.user
 /GLES/GLES.Demo/bin/Debug
+/GLES/GLES.PI/bin/Debug
+/GLES/GLES.PI/obj/Debug
