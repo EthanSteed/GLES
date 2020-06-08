@@ -11,7 +11,7 @@ GLES.PI is a Mono app that runs on the PI. You can build on windows and then cop
 
 GLES.Win is a WPF .net core app that is used to display the GL ES surface. 
 
-**Important  GLES.Win app must be run as x86 and you need to insure libegl.dll and libglesv2.dll (Angle) are included in the debug folder (these are included in source control)
+**Important  GLES.Win app must be run as x86 and you need to ensure libegl.dll and libglesv2.dll (Angle) are included in the debug folder (these are included in source control)
 
 
 
