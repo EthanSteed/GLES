@@ -131,7 +131,7 @@ namespace GLES.Demo
             m_Shader.Begin();
 
             // we need to setup blending in order to use the alpha channel.
-            //GL.Enable(EnableCap.Blend);
+            GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.One);
 
             // update the model and projection matrix

@@ -2,6 +2,7 @@
 using System.Reflection;
 using GLES.Fonts;
 using OpenTK.Graphics;
+using OpenTK.Maths;
 
 namespace GLES.Demo
 {
@@ -20,6 +21,7 @@ namespace GLES.Demo
         FontShader m_Shader;
 
         float m_AlphaTest = 0;
+        float m_Scale = 1;
 
         int m_CoordBuffer;
 
@@ -149,7 +151,7 @@ namespace GLES.Demo
                     float[,] sdf;
                     SDFHelper.GenerateSDFTexture(texdata, TEX_WIDTH, TEX_HEIGHT, out sdf);
 
-                    texdata = SDFHelper.NormaliseSDFTexture(sdf, TEX_WIDTH, TEX_HEIGHT);
+                    texdata = SDFHelper.NormaliseSDFTexture(sdf, TEX_WIDTH, TEX_HEIGHT, 6);
                 }
 
                 // Load data up to texture.
@@ -176,23 +178,34 @@ namespace GLES.Demo
         {
             bool handled = true;
 
+            
             switch (key)
             {
                 case 'q':
                     LoadFontChars(RenderMode.Glyph, 10, TEX_HEIGHT - 10, "A");
+                    m_Scale = 1f;
                     m_AlphaTest = 0f;
                     break;
                 case 'w':
                     LoadFontChars(RenderMode.Monochrome, 10, TEX_HEIGHT - 10, "A");
+                    m_Scale = 1f;
                     m_AlphaTest = 0f;
                     break;
                 case 'e':
                     LoadFontChars(RenderMode.SDFRaw, 10, TEX_HEIGHT - 10, "A");
+                    m_Scale = 1f;
                     m_AlphaTest = 0f;
                     break;
                 case 'r':
                     LoadFontChars(RenderMode.SDFRaw, 10, TEX_HEIGHT - 10, "A");
-                    m_AlphaTest = 0.5f;
+                    m_Scale = 1f;
+                    m_AlphaTest = 0.6f;
+                    break;
+                case 't':
+                    m_Scale = m_Scale * 2f;
+                    break;
+                case 'y':
+                    m_Scale = m_Scale * 0.5f;
                     break;
 
 
@@ -212,6 +225,9 @@ namespace GLES.Demo
         {
             // begin using the shader. 
             m_Shader.Begin();
+
+            m_ModelViewMatrix = Matrix4.Identity;
+            m_ModelViewMatrix = Matrix4.CreateScale(m_Scale);
 
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.One);
@@ -233,6 +249,7 @@ namespace GLES.Demo
             // bind the texture
             GL.BindTexture(TextureTarget.Texture2D, m_FontTexture);
 
+           
             // draw a quad (made up of two triangles)
             GL.DrawArrays(BeginMode.TriangleStrip, 0, 4);
 
