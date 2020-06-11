@@ -60,7 +60,7 @@ namespace GLES.Demo
             Vector3[] verts = new Vector3[] {
                 new Vector3(-100, -100, 1 ),
                 new Vector3(   0,  100, 1 ),
-                new Vector3( 100, -100, 1 ) };
+                new Vector3( 100, -100, 1 )};
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, m_VertexBuffer);
             GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(verts.Length * Vector3.SizeInBytes), verts, BufferUsage.StaticDraw);
@@ -68,9 +68,9 @@ namespace GLES.Demo
             // Load Color Buffer.
             Vector4[] colors = new Vector4[]
             {
-                new Vector4(1,0,0,1),
-                new Vector4(0,1,0,1),
-                new Vector4(0,0,1,1)
+                new Vector4(  1,  0,  0,1),
+                new Vector4(  0,  1,  0,1),
+                new Vector4(  1,  0,  1,1)
             };
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, m_ColorBuffer);
