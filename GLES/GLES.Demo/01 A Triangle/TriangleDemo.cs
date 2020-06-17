@@ -68,9 +68,9 @@ namespace GLES.Demo
             // Load Color Buffer.
             Vector4[] colors = new Vector4[]
             {
-                new Vector4(1,0,0,1),
-                new Vector4(0,1,0,1),
-                new Vector4(0,0,1,1)
+                new Vector4(0,1,1,1),
+                new Vector4(1,0,1,1),
+                new Vector4(1,1,0,1)
             };
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, m_ColorBuffer);
