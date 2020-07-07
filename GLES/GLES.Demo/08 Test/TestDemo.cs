@@ -125,7 +125,7 @@ namespace Test
                 new Vector3(    0,    0, 100), //top
                 new Vector3( -100, -100,   0), //base bottom left 
                 new Vector3(  100, -100,   0), //base bottom right
-
+                
             };
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, m_VertexBuffer);
