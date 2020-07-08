@@ -80,6 +80,8 @@ namespace OpenTK.Graphics
             }
         }
 
+
+
         #endregion
 
         #region GetActiveAttrib
@@ -164,6 +166,8 @@ namespace OpenTK.Graphics
             GetProgramInfoLog(program, out info);
             return info;
         }
+
+
 
         #endregion
 

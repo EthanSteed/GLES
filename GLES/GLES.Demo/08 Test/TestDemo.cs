@@ -10,79 +10,80 @@ namespace Test
     /// Testing C#.
     /// </summary>
     [Demo('8', "Testing C#")]
-    public class TestDemo : IDemo
+    public class TestDemo : DemoBase
     {
+        int m_Width, m_Height;
 
-        Matrix4 m_ProjectionMatrix;
-        Matrix4 m_ModelViewMatrix;
+        BasicShader test_Shader;
 
-        BasicShader m_Shader;
+        //Buffers
+        int m_CombineBuffer, m_IndexBuffer;
 
-        // buffers
-        int m_VertexBuffer;
-        int m_ColorBuffer;
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
+        ///<summary>
+        ///Constructor
+        ///</summary>
         public TestDemo()
         {
-            m_Shader = new BasicShader();
+            test_Shader = new BasicShader();
 
             m_ProjectionMatrix = Matrix4.Identity;
             m_ModelViewMatrix = Matrix4.Identity;
         }
-
-        /// <summary>
-        /// Initialise
-        /// </summary>
-        public void Initialise()
+        ///<summary>
+        ///Initialise
+        ///</summary>
+        public override void Initialise()
         {
-            // Set the clear color
+            // the color values used when clearing (R,G,B,Trans)
             GL.ClearColor(0.2f, 0.2f, 0.2f, 1f);
 
-            // Initialise the basic shader.
-            m_Shader.Initialise();
+            //Basic Shader Initialised
+            test_Shader.Initialise();
 
-            // generate buffers for triangle data.
-            GL.GenBuffers(1, out m_VertexBuffer);
-            GL.GenBuffers(1, out m_ColorBuffer);
+            //Create Buffers to store data for GPU
+            GL.GenBuffers(1, out m_CombineBuffer);
+            GL.GenBuffers(1, out m_IndexBuffer);
 
-            // load some data into these buffers.
+            //Call the function to load the buffers
             LoadBuffers();
         }
-
-        /// <summary>
-        /// Load up the buffers with data.
-        /// </summary>
-        private void LoadBuffers()
+        ///<summary>
+        ///Load Buffers
+        ///</summary>
+        public void LoadBuffers()
         {
-            // Load Vertex Buffer.
-            Vector3[] verts = new Vector3[] {
-                new Vector3(-100, -100, 1 ),
-                new Vector3(   0,  100, 1 ),
-                new Vector3( 100, -100, 1 ) };
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, m_VertexBuffer);
-            GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(verts.Length * Vector3.SizeInBytes), verts, BufferUsage.StaticDraw);
-
-            // Load Color Buffer.
-            Vector4[] colors = new Vector4[]
+            //Create Buffer
+            float[] Buffer = new float[]
             {
-                new Vector4(1,0,0,1),
-                new Vector4(0,1,0,1),
-                new Vector4(0,0,1,1)
+               // Coordinates           //Colours           //Textures
+                100.0f,  100.0f, 1.0f,    1.0f, 1.0f, 1.0f,   1, 1,
+                100.0f, -100.0f, 1.0f,    1.0f, 1.0f, 1.0f,   1, 0,
+               -100.0f,  100.0f, 1.0f,    1.0f, 1.0f, 1.0f,   0, 1,
+               -100.0f, -100.0f, 1.0f,    1.0f, 1.0f, 1.0f,   0, 0,
             };
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, m_ColorBuffer);
-            GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(colors.Length * Vector4.SizeInBytes), colors, BufferUsage.StaticDraw);
-        }
+            //bind the buffer
+            GL.BindBuffer(BufferTarget.ArrayBuffer, m_CombineBuffer);
+            GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(sizeof(float) * Buffer.Length), Buffer, BufferUsage.StaticDraw);
 
-        /// <summary>
-        /// Window has resized
-        /// </summary>
-        public void OnResize(int width, int height)
+            float [] Index = new float[]
+            {
+                0, 1, 2,
+                1, 2, 3,
+            };
+
+            //bind the Index
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, m_IndexBuffer);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, new IntPtr(sizeof(uint) * Index.Length), Index, BufferUsage.StaticDraw);
+
+        }
+        ///<summary>
+        ///Window Resize
+        ///</summary>
+        public override void OnResize(int width, int height)
         {
+            m_Width = width;
+            m_Height = height;
             // this sets up GL units to use for the display. We simply set the GL units 
             // to match the pixel units of the current window. Create Ortho sets the coordinate
             // system to +/- width/2 and +/- height/2  so 0,0 will be in the center of the window
@@ -96,80 +97,58 @@ namespace Test
             // is to experiment changing the viewport width / height to see the effects.
             GL.Viewport(0, 0, width, height);
         }
-
-        /// <summary>
-        /// Handle key press. (Not used)
-        /// </summary>
-        /// <param name="key"></param>
-        public bool HandleKeyPress(char key)
+        ///<summary>
+        ///Handle key press
+        ///</summary>
+        public override bool HandleKeyPress(char key)
         {
             return false;
         }
-
-
-        float angle = 0;
-
-        /// <summary>
-        /// Render
-        /// </summary>
-        public void Render()
+        ///<summary>
+        ///Render
+        ///</summary>
+        public override void Render()
         {
-            // reset the model view matrix.
+            //Framebuffer
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            GL.ClearColor(0.2f, 0.2f, 0.2f, 1f);
+
+            //resize window
+            OnResize(m_Width, m_Height);
+
+            test_Shader.Begin();
+            //reset the model view matrix
             m_ModelViewMatrix = Matrix4.Identity;
 
-            // apply a rotation to the model view.
-            m_ModelViewMatrix = Matrix4.Mult(m_ModelViewMatrix, Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(angle)));
+            test_Shader.UpdateProjectionMatrix(m_ProjectionMatrix);
+            test_Shader.UpdateModelViewMatrix(m_ModelViewMatrix);
 
-            // begin using the shader. 
-            m_Shader.Begin();
+            //ensure Vertex, color, Texture attrib
+            GL.EnableVertexAttribArray(test_Shader.VertexAttribLocation);
+            GL.EnableVertexAttribArray(test_Shader.ColorAttribLocation);
+            //GL.EnableVertexAttribArray(test_Shader.TextureCoordAttribLocation);
 
-            // update the model and projection matrix
-            m_Shader.UpdateProjectionMatrix(m_ProjectionMatrix);
-            m_Shader.UpdateModelViewMatrix(m_ModelViewMatrix);
+            //Find Data
+            GL.BindBuffer(BufferTarget.ArrayBuffer, m_CombineBuffer);
+            GL.VertexAttribPointer(test_Shader.VertexAttribLocation, 3, VertexAttribPointerType.Float, true, sizeof(float) * 8, 0);
+            GL.VertexAttribPointer(test_Shader.ColorAttribLocation, 3, VertexAttribPointerType.Float, true, sizeof(float) * 8, sizeof(float) * 3);
+            //GL.VertexAttribPointer(test_Shader.TextureCoordAttribLocation, 2, VertexAttribPointerType.Float, true, sizeof(float) * 8, sizeof(float) * 6);
 
-            // bind to our buffers and tell the shader where to look for the data.
+            //draw
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, m_IndexBuffer);
+            GL.DrawElements((All)BeginMode.Triangles, 6, (All)DrawElementsType.UnsignedShort, (IntPtr)0);
 
-            // first the vertices
+            test_Shader.End();
 
-            // ensure vertex and color attrib arrays are enabled.
-            GL.EnableVertexAttribArray(m_Shader.VertexAttribLocation);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, m_VertexBuffer);
-            GL.VertexAttribPointer(m_Shader.VertexAttribLocation, 3, VertexAttribPointerType.Float, true, Vector3.SizeInBytes, 0);
-
-            // now the colours
-            GL.EnableVertexAttribArray(m_Shader.ColorAttribLocation);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, m_ColorBuffer);
-            GL.VertexAttribPointer(m_Shader.ColorAttribLocation, 4, VertexAttribPointerType.Float, true, Vector4.SizeInBytes, 0);
-
-            // then draw. We only have 3 vertices making up 1 triangle
-            GL.DrawArrays(BeginMode.Triangles, 0, 3);
-
-            // finished with the shader.
-            m_Shader.End();
-
-            // increment our rotation
-            angle += 1;
-            if (angle > 360)
-            {
-                angle = 0f;
-            };
         }
-
-        /// <summary>
-        /// Finish
-        /// </summary>
-        public void Finish()
+        ///<summary>
+        ///Finsh
+        ///</summary>
+        public override void Finish()
         {
-            // finished with the shader
-            m_Shader.Finish();
+            test_Shader.Finish();
 
-            // free up the buffers.
-            GL.DeleteBuffers(1, ref m_VertexBuffer);
-            GL.DeleteBuffers(1, ref m_ColorBuffer);
-
+            GL.DeleteBuffers(1, ref m_CombineBuffer);
         }
-
     }
 }
