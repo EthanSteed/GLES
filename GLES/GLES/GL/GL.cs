@@ -1535,6 +1535,7 @@ namespace OpenTK.Graphics
         /// Specifies a pointer to the location where the indices are stored.
         /// </param>
         [DllImportAttribute("libGLESv2.dll", EntryPoint = "glDrawElements")]
+        /*
         public static extern void DrawElements(All mode, Int32 count, All type, IntPtr indices);
      
         /// <summary>[requires: v2.0 or ES_VERSION_2_0]
@@ -1553,6 +1554,7 @@ namespace OpenTK.Graphics
         /// Specifies a pointer to the location where the indices are stored.
         /// </param>
         [DllImportAttribute("libGLESv2.dll", EntryPoint = "glDrawElements")]
+        */
         public static extern void DrawElements(BeginMode mode, Int32 count, DrawElementsType type, IntPtr indices);
 
         /// <summary>[requires: v2.0 or ES_VERSION_2_0]

@@ -13,6 +13,7 @@ namespace Test
     public class TestDemo : DemoBase
     {
         int m_Width, m_Height;
+        float [] Index;
 
         BasicShader test_Shader;
 
@@ -66,7 +67,7 @@ namespace Test
             GL.BindBuffer(BufferTarget.ArrayBuffer, m_CombineBuffer);
             GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(sizeof(float) * Buffer.Length), Buffer, BufferUsage.StaticDraw);
 
-            float [] Index = new float[]
+            Index = new float[]
             {
                 0, 1, 2,
                 1, 2, 3,
@@ -74,7 +75,7 @@ namespace Test
 
             //bind the Index
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, m_IndexBuffer);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, new IntPtr(sizeof(uint) * Index.Length), Index, BufferUsage.StaticDraw);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, new IntPtr(sizeof(float) * Index.Length), Index, BufferUsage.StaticDraw);
 
         }
         ///<summary>
@@ -136,7 +137,8 @@ namespace Test
 
             //draw
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, m_IndexBuffer);
-            GL.DrawElements((All)BeginMode.Triangles, 6, (All)DrawElementsType.UnsignedShort, (IntPtr)0);
+            GL.DrawElements(BeginMode.Triangles, Index.Length, DrawElementsType.UnsignedShort, IntPtr.Zero);
+            //GL.DrawElements(PrimitiveType.Triangles, Index.Length, DrawElementsType.UnsignedInt, 0);
 
             test_Shader.End();
 
