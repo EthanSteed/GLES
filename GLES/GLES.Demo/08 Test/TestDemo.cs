@@ -57,9 +57,9 @@ namespace Test
             float[] Buffer = new float[]
             {
                // Coordinates           //Colours           //Textures
-                100.0f,  100.0f, 1.0f,    1.0f, 1.0f, 1.0f,   1, 1,
-                100.0f, -100.0f, 1.0f,    1.0f, 1.0f, 1.0f,   1, 0,
-               -100.0f,  100.0f, 1.0f,    1.0f, 1.0f, 1.0f,   0, 1,
+                100.0f,  100.0f, 1.0f,    1.0f, 0.0f, 0.0f,   1, 1,
+                100.0f, -100.0f, 1.0f,    0.0f, 1.0f, 0.0f,   1, 0,
+               -100.0f,  100.0f, 1.0f,    0.0f, 0.0f, 1.0f,   0, 1,
                -100.0f, -100.0f, 1.0f,    1.0f, 1.0f, 1.0f,   0, 0,
             };
 
@@ -67,6 +67,7 @@ namespace Test
             GL.BindBuffer(BufferTarget.ArrayBuffer, m_CombineBuffer);
             GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(sizeof(float) * Buffer.Length), Buffer, BufferUsage.StaticDraw);
 
+            /*
             Index = new float[]
             {
                 0, 1, 2,
@@ -76,6 +77,7 @@ namespace Test
             //bind the Index
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, m_IndexBuffer);
             GL.BufferData(BufferTarget.ElementArrayBuffer, new IntPtr(sizeof(float) * Index.Length), Index, BufferUsage.StaticDraw);
+            */
 
         }
         ///<summary>
@@ -135,9 +137,10 @@ namespace Test
             GL.VertexAttribPointer(test_Shader.ColorAttribLocation, 3, VertexAttribPointerType.Float, true, sizeof(float) * 8, sizeof(float) * 3);
             //GL.VertexAttribPointer(test_Shader.TextureCoordAttribLocation, 2, VertexAttribPointerType.Float, true, sizeof(float) * 8, sizeof(float) * 6);
 
+            GL.DrawArrays(BeginMode.Triangles, 0, 3);
             //draw
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, m_IndexBuffer);
-            GL.DrawElements(BeginMode.Triangles, Index.Length, DrawElementsType.UnsignedShort, IntPtr.Zero);
+            //GL.DrawElements(BeginMode.Triangles, Index.Length, DrawElementsType.UnsignedShort, IntPtr.Zero);
             //GL.DrawElements(PrimitiveType.Triangles, Index.Length, DrawElementsType.UnsignedInt, 0);
 
             test_Shader.End();
