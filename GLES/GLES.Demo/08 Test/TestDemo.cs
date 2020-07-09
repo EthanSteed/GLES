@@ -1,6 +1,7 @@
 ﻿using System;
 using GLES.Demo;
 using GLES.Shader;
+using System.Reflection;
 using OpenTK.Graphics;
 using OpenTK.Maths;
 
@@ -15,17 +16,17 @@ namespace Test
         int m_Width, m_Height;
         float [] Index;
 
-        BasicShader test_Shader;
+        CombineShader test_Shader;
 
         //Buffers
-        int m_CombineBuffer, m_IndexBuffer;
+        int m_CombineBuffer, m_IndexBuffer, m_Texture1, m_Texture2;
 
         ///<summary>
         ///Constructor
         ///</summary>
         public TestDemo()
         {
-            test_Shader = new BasicShader();
+            test_Shader = new CombineShader();
 
             m_ProjectionMatrix = Matrix4.Identity;
             m_ModelViewMatrix = Matrix4.Identity;
@@ -47,6 +48,11 @@ namespace Test
 
             //Call the function to load the buffers
             LoadBuffers();
+
+            GL.GenTextures(1, out m_Texture1);
+            GL.GenTextures(1, out m_Texture2);
+
+            InitAndLoadTexture();
         }
         ///<summary>
         ///Load Buffers
@@ -57,10 +63,55 @@ namespace Test
             float[] Buffer = new float[]
             {
                // Coordinates           //Colours           //Textures
+               
                 100.0f,  100.0f, 1.0f,    1.0f, 0.0f, 0.0f,   1, 1,
                 100.0f, -100.0f, 1.0f,    0.0f, 1.0f, 0.0f,   1, 0,
                -100.0f,  100.0f, 1.0f,    0.0f, 0.0f, 1.0f,   0, 1,
                -100.0f, -100.0f, 1.0f,    1.0f, 1.0f, 1.0f,   0, 0,
+                
+                /*
+                 -0.5f, -0.5f, -0.5f,    1.0f, 0.0f, 0.0f,     0.0f, 0.0f,
+                  0.5f, -0.5f, -0.5f,    0.0f, 1.0f, 0.0f,     1.0f, 0.0f,
+                  0.5f,  0.5f, -0.5f,    1.0f, 1.0f, 0.0f,     1.0f, 1.0f,
+                  0.5f,  0.5f, -0.5f,    1.0f, 1.0f, 0.0f,     1.0f, 1.0f,
+                 -0.5f,  0.5f, -0.5f,    0.0f, 1.0f, 1.0f,     0.0f, 1.0f,
+                 -0.5f, -0.5f, -0.5f,    1.0f, 0.0f, 0.0f,     0.0f, 0.0f,
+
+                 -0.5f, -0.5f,  0.5f,    1.0f, 0.0f, 0.0f,     0.0f, 0.0f,
+                  0.5f, -0.5f,  0.5f,    0.0f, 1.0f, 0.0f,     1.0f, 0.0f,
+                  0.5f,  0.5f,  0.5f,    1.0f, 1.0f, 0.0f,     1.0f, 1.0f,
+                  0.5f,  0.5f,  0.5f,    1.0f, 1.0f, 0.0f,     1.0f, 1.0f,
+                 -0.5f,  0.5f,  0.5f,    0.0f, 1.0f, 1.0f,     0.0f, 1.0f,
+                 -0.5f, -0.5f,  0.5f,    1.0f, 0.0f, 0.0f,     0.0f, 0.0f,
+
+                 -0.5f,  0.5f,  0.5f,    1.0f, 0.0f, 0.0f,     1.0f, 0.0f,
+                 -0.5f,  0.5f, -0.5f,    0.0f, 1.0f, 0.0f,     1.0f, 1.0f,
+                 -0.5f, -0.5f, -0.5f,    1.0f, 1.0f, 0.0f,     0.0f, 1.0f,
+                 -0.5f, -0.5f, -0.5f,    1.0f, 1.0f, 0.0f,     0.0f, 1.0f,
+                 -0.5f, -0.5f,  0.5f,    0.0f, 1.0f, 1.0f,     0.0f, 0.0f,
+                 -0.5f,  0.5f,  0.5f,    1.0f, 0.0f, 0.0f,     1.0f, 0.0f,
+
+                  0.5f,  0.5f,  0.5f,    1.0f, 0.0f, 0.0f,     1.0f, 0.0f,
+                  0.5f,  0.5f, -0.5f,    0.0f, 1.0f, 0.0f,     1.0f, 1.0f,
+                  0.5f, -0.5f, -0.5f,    1.0f, 1.0f, 0.0f,     0.0f, 1.0f,
+                  0.5f, -0.5f, -0.5f,    1.0f, 1.0f, 0.0f,     0.0f, 1.0f,
+                  0.5f, -0.5f,  0.5f,    0.0f, 1.0f, 1.0f,     0.0f, 0.0f,
+                  0.5f,  0.5f,  0.5f,    1.0f, 0.0f, 0.0f,     1.0f, 0.0f,
+
+                 -0.5f, -0.5f, -0.5f,    1.0f, 0.0f, 0.0f,     0.0f, 1.0f,
+                  0.5f, -0.5f, -0.5f,    0.0f, 1.0f, 0.0f,     1.0f, 1.0f,
+                  0.5f, -0.5f,  0.5f,    1.0f, 1.0f, 0.0f,     1.0f, 0.0f,
+                  0.5f, -0.5f,  0.5f,    1.0f, 1.0f, 0.0f,     1.0f, 0.0f,
+                 -0.5f, -0.5f,  0.5f,    0.0f, 1.0f, 1.0f,     0.0f, 0.0f,
+                 -0.5f, -0.5f, -0.5f,    1.0f, 0.0f, 0.0f,     0.0f, 1.0f,
+
+                 -0.5f,  0.5f, -0.5f,    1.0f, 0.0f, 0.0f,     0.0f, 1.0f,
+                  0.5f,  0.5f, -0.5f,    0.0f, 1.0f, 0.0f,     1.0f, 1.0f,
+                  0.5f,  0.5f,  0.5f,    1.0f, 1.0f, 0.0f,     1.0f, 0.0f,
+                  0.5f,  0.5f,  0.5f,    1.0f, 1.0f, 0.0f,     1.0f, 0.0f,
+                 -0.5f,  0.5f,  0.5f,    0.0f, 1.0f, 1.0f,     0.0f, 0.0f,
+                 -0.5f,  0.5f, -0.5f,    1.0f, 0.0f, 0.0f,     0.0f, 1.0f,
+                */
             };
 
             //bind the buffer
@@ -107,6 +158,50 @@ namespace Test
         {
             return false;
         }
+
+        private void InitAndLoadTexture()
+        {
+            // tell the graphics card what texture we are working with.
+            GL.BindTexture(TextureTarget.Texture2D, m_Texture1);
+
+            // set filtering and wrapping options.
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+
+            // load the image data into the texture target.
+            byte[] imgdata1;
+            GLES.EmbeddedResourceHelper.GetEmbeddedFileAsBytes(Assembly.GetExecutingAssembly(), "container.jpg", out imgdata1);
+
+            unsafe
+            {
+                fixed (byte* p1 = imgdata1)
+                {
+                    GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, 256, 256, 0, PixelFormat.Rgb, PixelType.UnsignedByte, (IntPtr)p1);
+                }
+            }
+            // tell the graphics card what texture we are working with.
+            GL.BindTexture(TextureTarget.Texture2D, m_Texture2);
+
+            // set filtering and wrapping options.
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+
+            // load the image data into the texture target.
+            byte[] imgdata2;
+            GLES.EmbeddedResourceHelper.GetEmbeddedFileAsBytes(Assembly.GetExecutingAssembly(), "awesomeface.png", out imgdata2);
+
+            unsafe
+            {
+                fixed (byte* p2 = imgdata2)
+                {
+                    GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, 256, 256, 0, PixelFormat.Rgb, PixelType.UnsignedByte, (IntPtr)p2);
+                }
+            }
+        }
         ///<summary>
         ///Render
         ///</summary>
@@ -114,7 +209,7 @@ namespace Test
         {
             //Framebuffer
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-            GL.ClearColor(0.2f, 0.2f, 0.2f, 1f);
+            GL.ClearColor(0.3f, 0.3f, 0.3f, 1f);
 
             //resize window
             OnResize(m_Width, m_Height);
@@ -129,17 +224,28 @@ namespace Test
             //ensure Vertex, color, Texture attrib
             GL.EnableVertexAttribArray(test_Shader.VertexAttribLocation);
             GL.EnableVertexAttribArray(test_Shader.ColorAttribLocation);
-            //GL.EnableVertexAttribArray(test_Shader.TextureCoordAttribLocation);
+            GL.EnableVertexAttribArray(test_Shader.TextureCoordAttribLocation);
 
             //Find Data
             GL.BindBuffer(BufferTarget.ArrayBuffer, m_CombineBuffer);
             GL.VertexAttribPointer(test_Shader.VertexAttribLocation, 3, VertexAttribPointerType.Float, true, sizeof(float) * 8, 0);
             GL.VertexAttribPointer(test_Shader.ColorAttribLocation, 3, VertexAttribPointerType.Float, true, sizeof(float) * 8, sizeof(float) * 3);
-            //GL.VertexAttribPointer(test_Shader.TextureCoordAttribLocation, 2, VertexAttribPointerType.Float, true, sizeof(float) * 8, sizeof(float) * 6);
+            GL.VertexAttribPointer(test_Shader.TextureCoordAttribLocation, 2, VertexAttribPointerType.Float, true, sizeof(float) * 8, sizeof(float) * 6);
 
-            GL.DrawArrays(BeginMode.Triangles, 0, 3);
+            test_Shader.SetTextureSlot(3);
+            GL.ActiveTexture(TextureUnit.Texture3);
+            GL.BindTexture(TextureTarget.Texture2D, m_Texture1);
+
+            test_Shader.SetTextureSlot(0);
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, m_Texture2);
+
+            GL.DrawArrays(BeginMode.TriangleStrip, 0, 4);
+
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+            
             //draw
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, m_IndexBuffer);
+            //GL.BindBuffer(BufferTarget.ElementArrayBuffer, m_IndexBuffer);
             //GL.DrawElements(BeginMode.Triangles, Index.Length, DrawElementsType.UnsignedShort, IntPtr.Zero);
             //GL.DrawElements(PrimitiveType.Triangles, Index.Length, DrawElementsType.UnsignedInt, 0);
 
