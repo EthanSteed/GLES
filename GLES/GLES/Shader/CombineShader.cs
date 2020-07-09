@@ -29,15 +29,16 @@ namespace GLES.Shader
             try
             {
                 string fs;
-                EmbeddedResourceHelper.GetEmbeddedFileAsString(Assembly.GetExecutingAssembly(), "textureshader.frag", out fs);
+                EmbeddedResourceHelper.GetEmbeddedFileAsString(Assembly.GetExecutingAssembly(), "Combineshader.frag", out fs);
 
                 string vs;
-                EmbeddedResourceHelper.GetEmbeddedFileAsString(Assembly.GetExecutingAssembly(), "textureshader.vert", out vs);
+                EmbeddedResourceHelper.GetEmbeddedFileAsString(Assembly.GetExecutingAssembly(), "Combineshader.vert", out vs);
 
                 base.Initialise(fs, vs);
 
                 // get attribute locations
                 VertexAttribLocation = GL.GetAttribLocation(m_Program, "aVert");
+                ColorAttribLocation = GL.GetAttribLocation(m_Program, "aColor");
                 TextureCoordAttribLocation = GL.GetAttribLocation(m_Program, "aTexCoord");
 
                 // get uniform locations
@@ -63,25 +64,6 @@ namespace GLES.Shader
             // tell the shader what slot we want to read the texture data from.
             GL.Uniform1(TextureSlotLocation, slot);
         }
-
-        /// <summary>
-        /// Update the model view matrix to use
-        /// </summary>
-        /// <param name="mat"></param>
-        public void UpdateModelViewMatrix(Matrix4 mat)
-        {
-            GL.UniformMatrix4(ModelViewMatrixLocation, false, ref mat);
-        }
-
-        /// <summary>
-        /// Update the projection matrix to use.
-        /// </summary>
-        /// <param name="mat"></param>
-        public void UpdateProjectionMatrix(Matrix4 mat)
-        {
-            GL.UniformMatrix4(ProjectionMatrixLocation, false, ref mat);
-        }
-
     }
 }
-}
+

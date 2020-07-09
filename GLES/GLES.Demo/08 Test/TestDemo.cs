@@ -14,10 +14,9 @@ namespace Test
     public class TestDemo : DemoBase
     {
         int m_Width, m_Height;
-        float [] Index;
+        //float [] Index;
 
         CombineShader test_Shader;
-
         //Buffers
         int m_CombineBuffer, m_IndexBuffer, m_Texture1, m_Texture2;
 
@@ -158,7 +157,9 @@ namespace Test
         {
             return false;
         }
-
+        /// <summary>
+        /// Bind Textures to buffers and load them.
+        /// </summary>
         private void InitAndLoadTexture()
         {
             // tell the graphics card what texture we are working with.
