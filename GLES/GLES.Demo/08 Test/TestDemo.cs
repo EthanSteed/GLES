@@ -13,12 +13,14 @@ namespace Test
     [Demo('8', "Testing C#")]
     public class TestDemo : DemoBase
     {
+        const int FRAME_BUFFER_DIM = 500;
         int m_Width, m_Height;
         //float [] Index;
 
         CombineShader test_Shader;
         //Buffers
         int m_CombineBuffer, m_IndexBuffer, m_Texture1, m_Texture2;
+        int m_Fbo ,m_FboColorTexture, m_FboDepthBuffer;
 
         ///<summary>
         ///Constructor
@@ -42,6 +44,14 @@ namespace Test
             test_Shader.Initialise();
 
             //Create Buffers to store data for GPU
+            GL.GenFramebuffers(1, out m_Fbo);
+            GL.GenTextures(1, out m_FboColorTexture);
+            GL.GenRenderbuffers(1, out m_FboDepthBuffer);
+
+            //Frame Buffer function
+            InitialiseFBO();
+
+            //position buffer
             GL.GenBuffers(1, out m_CombineBuffer);
             GL.GenBuffers(1, out m_IndexBuffer);
 
@@ -54,6 +64,45 @@ namespace Test
             InitAndLoadTexture();
         }
         ///<summary>
+        ///Frame Buffer
+        ///</summary>
+        private void InitialiseFBO()
+        {
+            // bind to our created frame buffer id for all of the following operations.
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, m_Fbo);
+            /*
+            // create texture for color image data.
+            GL.BindTexture(TextureTarget.Texture2D, m_FboColorTexture);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, FRAME_BUFFER_DIM, FRAME_BUFFER_DIM, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
+            */
+            // attach to the frame buffer
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferSlot.ColorAttachment0, TextureTarget.Texture2D, m_FboColorTexture, 0);
+
+            // create depth buffer
+            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, m_FboDepthBuffer);
+            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferInternalFormat.DepthComponent16, FRAME_BUFFER_DIM, FRAME_BUFFER_DIM);
+            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, 0);
+
+            // attach to the frame buffer.
+            GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferSlot.DepthAttachment, RenderbufferTarget.Renderbuffer, m_FboDepthBuffer);
+
+            // check frame buffer is complete 
+            FramebufferErrorCode err = GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer);
+            if (err != FramebufferErrorCode.FramebufferComplete)
+            {
+                System.Diagnostics.Debug.WriteLine(string.Format("Failed to create frame buffer : {0}", err));
+            }
+
+            // we've finished working with our frame buffer for now.
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+        }
+        ///<summary>
         ///Load Buffers
         ///</summary>
         public void LoadBuffers()
@@ -61,56 +110,71 @@ namespace Test
             //Create Buffer
             float[] Buffer = new float[]
             {
-               // Coordinates           //Colours           //Textures
+               // Coordinates               //Colours           //Textures
                
-                100.0f,  100.0f, 1.0f,    1.0f, 0.0f, 0.0f,   1, 1,
-                100.0f, -100.0f, 1.0f,    0.0f, 1.0f, 0.0f,   1, 0,
-               -100.0f,  100.0f, 1.0f,    0.0f, 0.0f, 1.0f,   0, 1,
-               -100.0f, -100.0f, 1.0f,    1.0f, 1.0f, 1.0f,   0, 0,
+               // 100.0f,  100.0f, 1.0f,    1.0f, 0.0f, 0.0f,   1, 1,
+               // 100.0f, -100.0f, 1.0f,    0.0f, 1.0f, 0.0f,   1, 0,
+               //-100.0f,  100.0f, 1.0f,    0.0f, 0.0f, 1.0f,   0, 1,
+               //-100.0f, -100.0f, 1.0f,    1.0f, 1.0f, 1.0f,   0, 0,
                 
-                /*
-                 -0.5f, -0.5f, -0.5f,    1.0f, 0.0f, 0.0f,     0.0f, 0.0f,
-                  0.5f, -0.5f, -0.5f,    0.0f, 1.0f, 0.0f,     1.0f, 0.0f,
-                  0.5f,  0.5f, -0.5f,    1.0f, 1.0f, 0.0f,     1.0f, 1.0f,
-                  0.5f,  0.5f, -0.5f,    1.0f, 1.0f, 0.0f,     1.0f, 1.0f,
-                 -0.5f,  0.5f, -0.5f,    0.0f, 1.0f, 1.0f,     0.0f, 1.0f,
-                 -0.5f, -0.5f, -0.5f,    1.0f, 0.0f, 0.0f,     0.0f, 0.0f,
+               /*
+                 -100f, -100f, -100f,    1.0f, 0.0f, 0.0f,     0.0f, 0.0f,
+                  100f, -100f, -100f,    0.0f, 1.0f, 0.0f,     1.0f, 0.0f,
+                  100f,  100f, -100f,    1.0f, 1.0f, 0.0f,     1.0f, 1.0f,
+                  100f,  100f, -100f,    1.0f, 1.0f, 0.0f,     1.0f, 1.0f,
+                 -100f,  100f, -100f,    0.0f, 1.0f, 1.0f,     0.0f, 1.0f,
+                 -100f, -100f, -100f,    1.0f, 0.0f, 0.0f,     0.0f, 0.0f,
 
-                 -0.5f, -0.5f,  0.5f,    1.0f, 0.0f, 0.0f,     0.0f, 0.0f,
-                  0.5f, -0.5f,  0.5f,    0.0f, 1.0f, 0.0f,     1.0f, 0.0f,
-                  0.5f,  0.5f,  0.5f,    1.0f, 1.0f, 0.0f,     1.0f, 1.0f,
-                  0.5f,  0.5f,  0.5f,    1.0f, 1.0f, 0.0f,     1.0f, 1.0f,
-                 -0.5f,  0.5f,  0.5f,    0.0f, 1.0f, 1.0f,     0.0f, 1.0f,
-                 -0.5f, -0.5f,  0.5f,    1.0f, 0.0f, 0.0f,     0.0f, 0.0f,
+                 -100f, -100f,  100f,    1.0f, 0.0f, 0.0f,     0.0f, 0.0f,
+                  100f, -100f,  100f,    0.0f, 1.0f, 0.0f,     1.0f, 0.0f,
+                  100f,  100f,  100f,    1.0f, 1.0f, 0.0f,     1.0f, 1.0f,
+                  100f,  100f,  100f,    1.0f, 1.0f, 0.0f,     1.0f, 1.0f,
+                 -100f,  100f,  100f,    0.0f, 1.0f, 1.0f,     0.0f, 1.0f,
+                 -100f, -100f,  100f,    1.0f, 0.0f, 0.0f,     0.0f, 0.0f,
 
-                 -0.5f,  0.5f,  0.5f,    1.0f, 0.0f, 0.0f,     1.0f, 0.0f,
-                 -0.5f,  0.5f, -0.5f,    0.0f, 1.0f, 0.0f,     1.0f, 1.0f,
-                 -0.5f, -0.5f, -0.5f,    1.0f, 1.0f, 0.0f,     0.0f, 1.0f,
-                 -0.5f, -0.5f, -0.5f,    1.0f, 1.0f, 0.0f,     0.0f, 1.0f,
-                 -0.5f, -0.5f,  0.5f,    0.0f, 1.0f, 1.0f,     0.0f, 0.0f,
-                 -0.5f,  0.5f,  0.5f,    1.0f, 0.0f, 0.0f,     1.0f, 0.0f,
+                 -100f,  100f,  100f,    1.0f, 0.0f, 0.0f,     1.0f, 0.0f,
+                 -100f,  100f, -100f,    0.0f, 1.0f, 0.0f,     1.0f, 1.0f,
+                 -100f, -100f, -100f,    1.0f, 1.0f, 0.0f,     0.0f, 1.0f,
+                 -100f, -100f, -100f,    1.0f, 1.0f, 0.0f,     0.0f, 1.0f,
+                 -100f, -100f,  100f,    0.0f, 1.0f, 1.0f,     0.0f, 0.0f,
+                 -100f,  100f,  100f,    1.0f, 0.0f, 0.0f,     1.0f, 0.0f,
 
-                  0.5f,  0.5f,  0.5f,    1.0f, 0.0f, 0.0f,     1.0f, 0.0f,
-                  0.5f,  0.5f, -0.5f,    0.0f, 1.0f, 0.0f,     1.0f, 1.0f,
-                  0.5f, -0.5f, -0.5f,    1.0f, 1.0f, 0.0f,     0.0f, 1.0f,
-                  0.5f, -0.5f, -0.5f,    1.0f, 1.0f, 0.0f,     0.0f, 1.0f,
-                  0.5f, -0.5f,  0.5f,    0.0f, 1.0f, 1.0f,     0.0f, 0.0f,
-                  0.5f,  0.5f,  0.5f,    1.0f, 0.0f, 0.0f,     1.0f, 0.0f,
+                  100f,  100f,  100f,    1.0f, 0.0f, 0.0f,     1.0f, 0.0f,
+                  100f,  100f, -100f,    0.0f, 1.0f, 0.0f,     1.0f, 1.0f,
+                  100f, -100f, -100f,    1.0f, 1.0f, 0.0f,     0.0f, 1.0f,
+                  100f, -100f, -100f,    1.0f, 1.0f, 0.0f,     0.0f, 1.0f,
+                  100f, -100f,  100f,    0.0f, 1.0f, 1.0f,     0.0f, 0.0f,
+                  100f,  100f,  100f,    1.0f, 0.0f, 0.0f,     1.0f, 0.0f,
 
-                 -0.5f, -0.5f, -0.5f,    1.0f, 0.0f, 0.0f,     0.0f, 1.0f,
-                  0.5f, -0.5f, -0.5f,    0.0f, 1.0f, 0.0f,     1.0f, 1.0f,
-                  0.5f, -0.5f,  0.5f,    1.0f, 1.0f, 0.0f,     1.0f, 0.0f,
-                  0.5f, -0.5f,  0.5f,    1.0f, 1.0f, 0.0f,     1.0f, 0.0f,
-                 -0.5f, -0.5f,  0.5f,    0.0f, 1.0f, 1.0f,     0.0f, 0.0f,
-                 -0.5f, -0.5f, -0.5f,    1.0f, 0.0f, 0.0f,     0.0f, 1.0f,
+                 -100f, -100f, -100f,    1.0f, 0.0f, 0.0f,     0.0f, 1.0f,
+                  100f, -100f, -100f,    0.0f, 1.0f, 0.0f,     1.0f, 1.0f,
+                  100f, -100f,  100f,    1.0f, 1.0f, 0.0f,     1.0f, 0.0f,
+                  100f, -100f,  100f,    1.0f, 1.0f, 0.0f,     1.0f, 0.0f,
+                 -100f, -100f,  100f,    0.0f, 1.0f, 1.0f,     0.0f, 0.0f,
+                 -100f, -100f, -100f,    1.0f, 0.0f, 0.0f,     0.0f, 1.0f,
 
-                 -0.5f,  0.5f, -0.5f,    1.0f, 0.0f, 0.0f,     0.0f, 1.0f,
-                  0.5f,  0.5f, -0.5f,    0.0f, 1.0f, 0.0f,     1.0f, 1.0f,
-                  0.5f,  0.5f,  0.5f,    1.0f, 1.0f, 0.0f,     1.0f, 0.0f,
-                  0.5f,  0.5f,  0.5f,    1.0f, 1.0f, 0.0f,     1.0f, 0.0f,
-                 -0.5f,  0.5f,  0.5f,    0.0f, 1.0f, 1.0f,     0.0f, 0.0f,
-                 -0.5f,  0.5f, -0.5f,    1.0f, 0.0f, 0.0f,     0.0f, 1.0f,
+                 -100f,  100f, -100f,    1.0f, 0.0f, 0.0f,     0.0f, 1.0f,
+                  100f,  100f, -100f,    0.0f, 1.0f, 0.0f,     1.0f, 1.0f,
+                  100f,  100f,  100f,    1.0f, 1.0f, 0.0f,     1.0f, 0.0f,
+                  100f,  100f,  100f,    1.0f, 1.0f, 0.0f,     1.0f, 0.0f,
+                 -100f,  100f,  100f,    0.0f, 1.0f, 1.0f,     0.0f, 0.0f,
+                 -100f,  100f, -100f,    1.0f, 0.0f, 0.0f,     0.0f, 1.0f,
                 */
+
+                         -100f,  100f,  100f,  0, 0,
+                          100f,  100f,  100f,  1, 0,
+                         -100f, -100f,  100f,  0, 1,
+                          100f, -100f,  100f,  1, 1,
+                          100f, -100f, -100f,  1, 0,
+                          100f,  100f,  100f,  0, 1,
+                          100f,  100f, -100f,  0, 0,
+                         -100f,  100f,  100f,  1, 1,
+                         -100f,  100f, -100f,  1, 0,
+                         -100f, -100f,  100f,  0, 1,
+                         -100f, -100f, -100f,  0, 0,
+                          100f, -100f, -100f,  1, 0,
+                         -100f,  100f, -100f,  0, 1,
+                          100f,  100f, -100f,  1, 1,
             };
 
             //bind the buffer
@@ -199,18 +263,23 @@ namespace Test
             {
                 fixed (byte* p2 = imgdata2)
                 {
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, 256, 256, 0, PixelFormat.Rgb, PixelType.UnsignedByte, (IntPtr)p2);
+                    GL.TexImage2D(TextureTarget.Texture2D, 3, PixelInternalFormat.Rgb, 256, 256, 0, PixelFormat.Rgb, PixelType.UnsignedByte, (IntPtr)p2);
                 }
             }
         }
+
         ///<summary>
         ///Render
         ///</summary>
+        float angle = 0;
         public override void Render()
         {
             //Framebuffer
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, m_Fbo);
+            GL.Enable(EnableCap.DepthTest);
+            
             GL.ClearColor(0.3f, 0.3f, 0.3f, 1f);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             //resize window
             OnResize(m_Width, m_Height);
@@ -224,26 +293,26 @@ namespace Test
 
             //ensure Vertex, color, Texture attrib
             GL.EnableVertexAttribArray(test_Shader.VertexAttribLocation);
-            GL.EnableVertexAttribArray(test_Shader.ColorAttribLocation);
+            //GL.EnableVertexAttribArray(test_Shader.ColorAttribLocation);
             GL.EnableVertexAttribArray(test_Shader.TextureCoordAttribLocation);
 
             //Find Data
             GL.BindBuffer(BufferTarget.ArrayBuffer, m_CombineBuffer);
-            GL.VertexAttribPointer(test_Shader.VertexAttribLocation, 3, VertexAttribPointerType.Float, true, sizeof(float) * 8, 0);
-            GL.VertexAttribPointer(test_Shader.ColorAttribLocation, 3, VertexAttribPointerType.Float, true, sizeof(float) * 8, sizeof(float) * 3);
-            GL.VertexAttribPointer(test_Shader.TextureCoordAttribLocation, 2, VertexAttribPointerType.Float, true, sizeof(float) * 8, sizeof(float) * 6);
+            GL.VertexAttribPointer(test_Shader.VertexAttribLocation, 3, VertexAttribPointerType.Float, true, sizeof(float) * 5, 0);
+            //GL.VertexAttribPointer(test_Shader.ColorAttribLocation, 3, VertexAttribPointerType.Float, true, sizeof(float) * 8, sizeof(float) * 3);
+            GL.VertexAttribPointer(test_Shader.TextureCoordAttribLocation, 2, VertexAttribPointerType.Float, true, sizeof(float) * 5, sizeof(float) * 6);
 
-            test_Shader.SetTextureSlot(3);
-            GL.ActiveTexture(TextureUnit.Texture3);
-            GL.BindTexture(TextureTarget.Texture2D, m_Texture1);
+            //test_Shader.SetTextureSlot(0);
+            //GL.ActiveTexture(TextureUnit.Texture0);
+            //GL.BindTexture(TextureTarget.Texture2D, m_Texture2);
 
-            test_Shader.SetTextureSlot(0);
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, m_Texture2);
+            //test_Shader.SetTextureSlot(3);
+            //GL.ActiveTexture(TextureUnit.Texture3);
+            //GL.BindTexture(TextureTarget.Texture2D, m_Texture1);
 
-            GL.DrawArrays(BeginMode.TriangleStrip, 0, 4);
+            GL.DrawArrays(BeginMode.TriangleStrip, 0, 36);
 
-            GL.BindTexture(TextureTarget.Texture2D, 0);
+            //GL.BindTexture(TextureTarget.Texture2D, 0);
             
             //draw
             //GL.BindBuffer(BufferTarget.ElementArrayBuffer, m_IndexBuffer);
@@ -252,6 +321,12 @@ namespace Test
 
             test_Shader.End();
 
+
+            angle += 1;
+            if (angle > 360)
+            {
+                angle = 0f;
+            };
         }
         ///<summary>
         ///Finsh
