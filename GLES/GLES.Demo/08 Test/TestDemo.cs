@@ -4,6 +4,7 @@ using GLES.Shader;
 using OpenTK.Graphics;
 using OpenTK.Maths;
 
+
 namespace Test
 {
     /// <summary>
@@ -14,12 +15,18 @@ namespace Test
     {
         int m_Width, m_Height;
         float [] Index;
+        const int FRAME_BUFFER_DIM = 500;
+        const float MOVE_SPEED = 10f;
+        const int ROTATE_SPEED = 1;
 
         BasicShader test_Shader;
 
         //Buffers
         int m_CombineBuffer, m_IndexBuffer;
 
+        int m_Fbo;
+        int m_FboColorTexture;
+        int m_FboDepthBuffer;
         ///<summary>
         ///Constructor
         ///</summary>
@@ -29,6 +36,7 @@ namespace Test
 
             m_ProjectionMatrix = Matrix4.Identity;
             m_ModelViewMatrix = Matrix4.Identity;
+            m_ViewMatrix = Matrix4.Identity;
         }
         ///<summary>
         ///Initialise
@@ -41,12 +49,58 @@ namespace Test
             //Basic Shader Initialised
             test_Shader.Initialise();
 
+            //FBO Depth
+            GL.GenFramebuffers(1, out m_Fbo);
+            GL.GenTextures(1, out m_FboColorTexture);
+            GL.GenRenderbuffers(1, out m_FboDepthBuffer);
+
+            // create FBO
+            InitialiseFBO();
+
             //Create Buffers to store data for GPU
             GL.GenBuffers(1, out m_CombineBuffer);
             GL.GenBuffers(1, out m_IndexBuffer);
 
             //Call the function to load the buffers
             LoadBuffers();
+        }
+
+        private void InitialiseFBO()
+        {
+            // bind to our created frame buffer id for all of the following operations.
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, m_Fbo);
+
+            // create texture for color image data.
+            GL.BindTexture(TextureTarget.Texture2D, m_FboColorTexture);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, FRAME_BUFFER_DIM, FRAME_BUFFER_DIM, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
+
+            // attach to the frame buffer
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferSlot.ColorAttachment0, TextureTarget.Texture2D, m_FboColorTexture, 0);
+
+
+            // create depth buffer
+            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, m_FboDepthBuffer);
+            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferInternalFormat.DepthComponent16, FRAME_BUFFER_DIM, FRAME_BUFFER_DIM);
+            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, 0);
+
+            // attach to the frame buffer.
+            GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferSlot.DepthAttachment, RenderbufferTarget.Renderbuffer, m_FboDepthBuffer);
+
+            // check frame buffer is complete 
+            FramebufferErrorCode err = GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer);
+            if (err != FramebufferErrorCode.FramebufferComplete)
+            {
+                System.Diagnostics.Debug.WriteLine(string.Format("Failed to create frame buffer : {0}", err));
+            }
+
+            // we've finished working with our frame buffer for now.
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
         }
         ///<summary>
         ///Load Buffers
@@ -57,10 +111,54 @@ namespace Test
             float[] Buffer = new float[]
             {
                // Coordinates           //Colours           //Textures
-                100.0f,  100.0f, 1.0f,    1.0f, 1.0f, 1.0f,   1, 1,
-                100.0f, -100.0f, 1.0f,    1.0f, 1.0f, 1.0f,   1, 0,
-               -100.0f,  100.0f, 1.0f,    1.0f, 1.0f, 1.0f,   0, 1,
-               -100.0f, -100.0f, 1.0f,    1.0f, 1.0f, 1.0f,   0, 0,
+               /*
+                100.0f,  100.0f, 1.0f,    1.0f, 1.0f, 1.0f,
+                100.0f, -100.0f, 1.0f,    1.0f, 1.0f, 1.0f,
+               -100.0f,  100.0f, 1.0f,    1.0f, 1.0f, 1.0f,
+               -100.0f, -100.0f, 1.0f,    1.0f, 1.0f, 1.0f,
+               */
+
+                -100f, -100f, -100f,    1.0f, 0.0f, 0.0f,     
+                 100f, -100f, -100f,    0.0f, 1.0f, 0.0f,     
+                 100f,  100f, -100f,    1.0f, 1.0f, 0.0f,    
+                 100f,  100f, -100f,    1.0f, 1.0f, 0.0f,   
+                -100f,  100f, -100f,    0.0f, 1.0f, 1.0f,   
+                -100f, -100f, -100f,    1.0f, 0.0f, 0.0f,   
+
+                -100f, -100f,  100f,    1.0f, 0.0f, 0.0f,   
+                 100f, -100f,  100f,    0.0f, 1.0f, 0.0f,   
+                 100f,  100f,  100f,    1.0f, 1.0f, 0.0f,   
+                 100f,  100f,  100f,    1.0f, 1.0f, 0.0f,   
+                -100f,  100f,  100f,    0.0f, 1.0f, 1.0f,  
+                -100f, -100f,  100f,    1.0f, 0.0f, 0.0f,  
+                
+                -100f,  100f,  100f,    1.0f, 0.0f, 0.0f,  
+                -100f,  100f, -100f,    0.0f, 1.0f, 0.0f,  
+                -100f, -100f, -100f,    1.0f, 1.0f, 0.0f,  
+                -100f, -100f, -100f,    1.0f, 1.0f, 0.0f,  
+                -100f, -100f,  100f,    0.0f, 1.0f, 1.0f,  
+                -100f,  100f,  100f,    1.0f, 0.0f, 0.0f,     
+                
+                 100f,  100f,  100f,    1.0f, 0.0f, 0.0f,     
+                 100f,  100f, -100f,    0.0f, 1.0f, 0.0f,     
+                 100f, -100f, -100f,    1.0f, 1.0f, 0.0f,     
+                 100f, -100f, -100f,    1.0f, 1.0f, 0.0f,     
+                 100f, -100f,  100f,    0.0f, 1.0f, 1.0f,     
+                 100f,  100f,  100f,    1.0f, 0.0f, 0.0f,     
+
+                -100f, -100f, -100f,    1.0f, 0.0f, 0.0f,     
+                 100f, -100f, -100f,    0.0f, 1.0f, 0.0f,     
+                 100f, -100f,  100f,    1.0f, 1.0f, 0.0f,     
+                 100f, -100f,  100f,    1.0f, 1.0f, 0.0f,     
+                -100f, -100f,  100f,    0.0f, 1.0f, 1.0f,     
+                -100f, -100f, -100f,    1.0f, 0.0f, 0.0f,     
+                
+                -100f,  100f, -100f,    1.0f, 0.0f, 0.0f,     
+                 100f,  100f, -100f,    0.0f, 1.0f, 0.0f,     
+                 100f,  100f,  100f,    1.0f, 1.0f, 0.0f,     
+                 100f,  100f,  100f,    1.0f, 1.0f, 0.0f,     
+                -100f,  100f,  100f,    0.0f, 1.0f, 1.0f,     
+                -100f,  100f, -100f,    1.0f, 0.0f, 0.0f,     
             };
 
             //bind the buffer
@@ -103,26 +201,71 @@ namespace Test
         ///</summary>
         public override bool HandleKeyPress(char key)
         {
-            return false;
+            bool handled = true;
+
+            switch (key)
+            {
+                case 'w':
+                    Move.Y += MOVE_SPEED;
+                    break;
+                case 's':
+                    Move.Y -= MOVE_SPEED;
+                    break;
+                case 'a':
+                    Move.X -= MOVE_SPEED;
+                    break;
+                case 'd':
+                    Move.X += MOVE_SPEED;
+                    break;
+                case '':
+                    //Finish();
+                    break;
+                default:
+                        handled = false;
+                        break;
+            }
+
+            return (handled);
         }
+        public bool handleMouse()
+        {
+            bool handled = true;
+
+
+            System.Windows.Input.ICommand mouse;
+
+
+            return handled;
+        }
+        int angleX = 0, angleY = 0, angleZ = 0;
+
+        Vector3 Move;
+
         ///<summary>
         ///Render
         ///</summary>
         public override void Render()
         {
-            //Framebuffer
+            // bind to our frame buffer
+            //GL.BindFramebuffer(FramebufferTarget.Framebuffer, m_Fbo);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            GL.Enable(EnableCap.DepthTest);
             GL.ClearColor(0.2f, 0.2f, 0.2f, 1f);
+            GL.Clear(ClearBufferMask.DepthBufferBit);
 
             //resize window
             OnResize(m_Width, m_Height);
 
             test_Shader.Begin();
             //reset the model view matrix
-            m_ModelViewMatrix = Matrix4.Identity;
+
+            // reset the model view matrix.
+
+            m_ModelViewMatrix = Matrix4.Mult(m_ModelViewMatrix, Matrix4.CreateTranslation(Move));
 
             test_Shader.UpdateProjectionMatrix(m_ProjectionMatrix);
             test_Shader.UpdateModelViewMatrix(m_ModelViewMatrix);
+            test_Shader.UpdateViewMatrix(m_ViewMatrix);
 
             //ensure Vertex, color, Texture attrib
             GL.EnableVertexAttribArray(test_Shader.VertexAttribLocation);
@@ -131,17 +274,17 @@ namespace Test
 
             //Find Data
             GL.BindBuffer(BufferTarget.ArrayBuffer, m_CombineBuffer);
-            GL.VertexAttribPointer(test_Shader.VertexAttribLocation, 3, VertexAttribPointerType.Float, true, sizeof(float) * 8, 0);
-            GL.VertexAttribPointer(test_Shader.ColorAttribLocation, 3, VertexAttribPointerType.Float, true, sizeof(float) * 8, sizeof(float) * 3);
+            GL.VertexAttribPointer(test_Shader.VertexAttribLocation, 3, VertexAttribPointerType.Float, true, sizeof(float) * 6, 0);
+            GL.VertexAttribPointer(test_Shader.ColorAttribLocation, 3, VertexAttribPointerType.Float, true, sizeof(float) * 6, sizeof(float) * 3);
             //GL.VertexAttribPointer(test_Shader.TextureCoordAttribLocation, 2, VertexAttribPointerType.Float, true, sizeof(float) * 8, sizeof(float) * 6);
 
             //draw
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, m_IndexBuffer);
-            GL.DrawElements(BeginMode.Triangles, Index.Length, DrawElementsType.UnsignedShort, IntPtr.Zero);
-            //GL.DrawElements(PrimitiveType.Triangles, Index.Length, DrawElementsType.UnsignedInt, 0);
+            GL.DrawArrays(BeginMode.TriangleStrip, 0, 36);
 
             test_Shader.End();
 
+            angleX = 0; angleY = 0; angleZ = 0;
+            Move.X = 0; Move.Y = 0; Move.Z = 0;
         }
         ///<summary>
         ///Finsh
@@ -149,8 +292,12 @@ namespace Test
         public override void Finish()
         {
             test_Shader.Finish();
-
+            
             GL.DeleteBuffers(1, ref m_CombineBuffer);
+
+                // Console app
+                System.Environment.Exit(1);
+            
         }
     }
 }

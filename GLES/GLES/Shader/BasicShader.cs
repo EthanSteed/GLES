@@ -29,6 +29,11 @@ namespace GLES.Shader
         /// </summary>
         public int ModelViewMatrixLocation { get; set; }
 
+        ///<summary>
+        /// View Matrix
+        ///</summary>
+        public int ViewMatrixLocation { get; set; }
+
         /// <summary>
         /// Initialise the shader
         /// </summary>
@@ -51,6 +56,7 @@ namespace GLES.Shader
                 // get uniform locations
                 ProjectionMatrixLocation = GL.GetUniformLocation(m_Program, "uProjection_matrix");
                 ModelViewMatrixLocation = GL.GetUniformLocation(m_Program, "uModelview_matrix");
+                ViewMatrixLocation = GL.GetUniformLocation(m_Program, "uViewMatrix");
 
             }
             catch (ShaderException se)
@@ -78,5 +84,13 @@ namespace GLES.Shader
             GL.UniformMatrix4(ProjectionMatrixLocation, false, ref mat);
         }
 
+        /// <summary>
+        /// Update the View matrix to use.
+        /// </summary>
+        /// <param name="mat"></param>
+        public void UpdateViewMatrix(Matrix4 mat)
+        {
+            GL.UniformMatrix4(ViewMatrixLocation, false, ref mat);
+        }
     }
 }

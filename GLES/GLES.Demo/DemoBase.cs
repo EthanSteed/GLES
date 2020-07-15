@@ -8,6 +8,7 @@ namespace GLES.Demo
 
         protected Matrix4 m_ProjectionMatrix;
         protected Matrix4 m_ModelViewMatrix;
+        protected Matrix4 m_ViewMatrix;
         
         /// <summary>
         /// Initialise
@@ -16,6 +17,7 @@ namespace GLES.Demo
         {
             m_ProjectionMatrix = Matrix4.Identity;
             m_ModelViewMatrix = Matrix4.Identity;
+            m_ViewMatrix = Matrix4.Identity;
         }
 
         /// <summary>

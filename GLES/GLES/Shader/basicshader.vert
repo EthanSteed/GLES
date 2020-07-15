@@ -4,6 +4,7 @@
 // these can be updated only when you are using the current program
 uniform mat4 uModelview_matrix;
 uniform mat4 uProjection_matrix;
+uniform mat4 uView_Matrix;
 
 // attributes. This is data sent for every vertex that you send
 // to the shader.
