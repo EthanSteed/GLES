@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using GLES.Demo;
 using GLES.Shader;
 using OpenTK.Graphics;
@@ -18,8 +19,9 @@ namespace Test
         const int FRAME_BUFFER_DIM = 500;
         const float MOVE_SPEED = 10f;
         const int ROTATE_SPEED = 1;
+        float FOV = (float)(3.14 / 2);
 
-        BasicShader test_Shader;
+        BasicShaderView test_Shader;
 
         //Buffers
         int m_CombineBuffer, m_IndexBuffer;
@@ -32,7 +34,7 @@ namespace Test
         ///</summary>
         public TestDemo()
         {
-            test_Shader = new BasicShader();
+            test_Shader = new BasicShaderView();
 
             m_ProjectionMatrix = Matrix4.Identity;
             m_ModelViewMatrix = Matrix4.Identity;
@@ -118,47 +120,47 @@ namespace Test
                -100.0f, -100.0f, 1.0f,    1.0f, 1.0f, 1.0f,
                */
 
-                -100f, -100f, -100f,    1.0f, 0.0f, 0.0f,     
-                 100f, -100f, -100f,    0.0f, 1.0f, 0.0f,     
-                 100f,  100f, -100f,    1.0f, 1.0f, 0.0f,    
-                 100f,  100f, -100f,    1.0f, 1.0f, 0.0f,   
-                -100f,  100f, -100f,    0.0f, 1.0f, 1.0f,   
-                -100f, -100f, -100f,    1.0f, 0.0f, 0.0f,   
+                -10f, -10f, -10f,    1.0f, 0.0f, 0.0f,     
+                 10f, -10f, -10f,    0.0f, 1.0f, 0.0f,     
+                 10f,  10f, -10f,    1.0f, 1.0f, 0.0f,    
+                 10f,  10f, -10f,    1.0f, 1.0f, 0.0f,   
+                -10f,  10f, -10f,    0.0f, 1.0f, 1.0f,   
+                -10f, -10f, -10f,    1.0f, 0.0f, 0.0f,   
 
-                -100f, -100f,  100f,    1.0f, 0.0f, 0.0f,   
-                 100f, -100f,  100f,    0.0f, 1.0f, 0.0f,   
-                 100f,  100f,  100f,    1.0f, 1.0f, 0.0f,   
-                 100f,  100f,  100f,    1.0f, 1.0f, 0.0f,   
-                -100f,  100f,  100f,    0.0f, 1.0f, 1.0f,  
-                -100f, -100f,  100f,    1.0f, 0.0f, 0.0f,  
+                -10f, -10f,  10f,    1.0f, 0.0f, 0.0f,   
+                 10f, -10f,  10f,    0.0f, 1.0f, 0.0f,   
+                 10f,  10f,  10f,    1.0f, 1.0f, 0.0f,   
+                 10f,  10f,  10f,    1.0f, 1.0f, 0.0f,   
+                -10f,  10f,  10f,    0.0f, 1.0f, 1.0f,  
+                -10f, -10f,  10f,    1.0f, 0.0f, 0.0f,  
                 
-                -100f,  100f,  100f,    1.0f, 0.0f, 0.0f,  
-                -100f,  100f, -100f,    0.0f, 1.0f, 0.0f,  
-                -100f, -100f, -100f,    1.0f, 1.0f, 0.0f,  
-                -100f, -100f, -100f,    1.0f, 1.0f, 0.0f,  
-                -100f, -100f,  100f,    0.0f, 1.0f, 1.0f,  
-                -100f,  100f,  100f,    1.0f, 0.0f, 0.0f,     
+                -10f,  10f,  10f,    1.0f, 0.0f, 0.0f,  
+                -10f,  10f, -10f,    0.0f, 1.0f, 0.0f,  
+                -10f, -10f, -10f,    1.0f, 1.0f, 0.0f,  
+                -10f, -10f, -10f,    1.0f, 1.0f, 0.0f,  
+                -10f, -10f,  10f,    0.0f, 1.0f, 1.0f,  
+                -10f,  10f,  10f,    1.0f, 0.0f, 0.0f,     
                 
-                 100f,  100f,  100f,    1.0f, 0.0f, 0.0f,     
-                 100f,  100f, -100f,    0.0f, 1.0f, 0.0f,     
-                 100f, -100f, -100f,    1.0f, 1.0f, 0.0f,     
-                 100f, -100f, -100f,    1.0f, 1.0f, 0.0f,     
-                 100f, -100f,  100f,    0.0f, 1.0f, 1.0f,     
-                 100f,  100f,  100f,    1.0f, 0.0f, 0.0f,     
+                 10f,  10f,  10f,    1.0f, 0.0f, 0.0f,     
+                 10f,  10f, -10f,    0.0f, 1.0f, 0.0f,     
+                 10f, -10f, -10f,    1.0f, 1.0f, 0.0f,     
+                 10f, -10f, -10f,    1.0f, 1.0f, 0.0f,     
+                 10f, -10f,  10f,    0.0f, 1.0f, 1.0f,     
+                 10f,  10f,  10f,    1.0f, 0.0f, 0.0f,     
 
-                -100f, -100f, -100f,    1.0f, 0.0f, 0.0f,     
-                 100f, -100f, -100f,    0.0f, 1.0f, 0.0f,     
-                 100f, -100f,  100f,    1.0f, 1.0f, 0.0f,     
-                 100f, -100f,  100f,    1.0f, 1.0f, 0.0f,     
-                -100f, -100f,  100f,    0.0f, 1.0f, 1.0f,     
-                -100f, -100f, -100f,    1.0f, 0.0f, 0.0f,     
+                -10f, -10f, -10f,    1.0f, 0.0f, 0.0f,     
+                 10f, -10f, -10f,    0.0f, 1.0f, 0.0f,     
+                 10f, -10f,  10f,    1.0f, 1.0f, 0.0f,     
+                 10f, -10f,  10f,    1.0f, 1.0f, 0.0f,     
+                -10f, -10f,  10f,    0.0f, 1.0f, 1.0f,     
+                -10f, -10f, -10f,    1.0f, 0.0f, 0.0f,     
                 
-                -100f,  100f, -100f,    1.0f, 0.0f, 0.0f,     
-                 100f,  100f, -100f,    0.0f, 1.0f, 0.0f,     
-                 100f,  100f,  100f,    1.0f, 1.0f, 0.0f,     
-                 100f,  100f,  100f,    1.0f, 1.0f, 0.0f,     
-                -100f,  100f,  100f,    0.0f, 1.0f, 1.0f,     
-                -100f,  100f, -100f,    1.0f, 0.0f, 0.0f,     
+                -10f,  10f, -10f,    1.0f, 0.0f, 0.0f,     
+                 10f,  10f, -10f,    0.0f, 1.0f, 0.0f,     
+                 10f,  10f,  10f,    1.0f, 1.0f, 0.0f,     
+                 10f,  10f,  10f,    1.0f, 1.0f, 0.0f,     
+                -10f,  10f,  10f,    0.0f, 1.0f, 1.0f,     
+                -10f,  10f, -10f,    1.0f, 0.0f, 0.0f,     
             };
 
             //bind the buffer
@@ -187,7 +189,9 @@ namespace Test
             // to match the pixel units of the current window. Create Ortho sets the coordinate
             // system to +/- width/2 and +/- height/2  so 0,0 will be in the center of the window
             // -width/2, -height/2 will be in the bottom left.
-            m_ProjectionMatrix = Matrix4.CreateOrthographic(width, height, -100.0f, 100.0f);
+            //m_ProjectionMatrix = Matrix4.CreateOrthographic(width, height, -1000.0f, 1000.0f);
+
+            m_ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, (width/height), 10.0f, 1000.0f);
 
             // Viewport says what part of the window are we going to render to. We will
             // just set this to the window size width. You could choose to just render to 
@@ -217,8 +221,14 @@ namespace Test
                 case 'd':
                     Move.X += MOVE_SPEED;
                     break;
+                case '[':
+                    Move.Z -= MOVE_SPEED;
+                    break;
+                case ']':
+                    Move.Z += MOVE_SPEED;
+                    break;
                 case '':
-                    //Finish();
+                    Finish();
                     break;
                 default:
                         handled = false;
@@ -234,10 +244,11 @@ namespace Test
 
             System.Windows.Input.ICommand mouse;
 
+            
 
             return handled;
         }
-        int angleX = 0, angleY = 0, angleZ = 0;
+        int angle = 0;
 
         Vector3 Move;
 
@@ -263,6 +274,8 @@ namespace Test
 
             m_ModelViewMatrix = Matrix4.Mult(m_ModelViewMatrix, Matrix4.CreateTranslation(Move));
 
+            m_ProjectionMatrix = Matrix4.Mult(m_ProjectionMatrix, Matrix4.CreateRotationX(angle));
+
             test_Shader.UpdateProjectionMatrix(m_ProjectionMatrix);
             test_Shader.UpdateModelViewMatrix(m_ModelViewMatrix);
             test_Shader.UpdateViewMatrix(m_ViewMatrix);
@@ -283,7 +296,11 @@ namespace Test
 
             test_Shader.End();
 
-            angleX = 0; angleY = 0; angleZ = 0;
+            angle = angle++;
+            if(angle > 360)
+            {
+                angle = 0;
+            }
             Move.X = 0; Move.Y = 0; Move.Z = 0;
         }
         ///<summary>

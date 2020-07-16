@@ -11,9 +11,13 @@
   <ItemGroup>
     <None Remove="Shader\basicshader.frag" />
     <None Remove="Shader\basicshader.vert" />
+    <None Remove="Shader\basicshaderView.frag" />
+    <None Remove="Shader\basicshaderView.vert" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Shader\basicshaderView.frag" />
+    <EmbeddedResource Include="Shader\basicshaderView.vert" />
     <EmbeddedResource Include="Shader\basicshader.frag" />
     <EmbeddedResource Include="Shader\basicshader.vert" />
   </ItemGroup>
