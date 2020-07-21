@@ -21,6 +21,11 @@ namespace GLES.Demo
         bool HandleKeyPress(char key);
 
         /// <summary>
+        /// Allow demo to handle Mouse movement.
+        /// </summary>
+        bool handleMouse(float WheelY);
+
+        /// <summary>
         /// Render. This is called every frame. Hopefully more than 30 FPS
         /// </summary>
         void Render();

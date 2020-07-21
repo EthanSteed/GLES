@@ -48,6 +48,13 @@ namespace GLES.Demo
             return false;
         }
 
+        /// <summary>
+        /// Allow demo to handle Mouse movement.
+        /// </summary>
+        public virtual bool handleMouse(float WheelY)
+        {
+            return false;
+        }
 
         /// <summary>
         /// Render

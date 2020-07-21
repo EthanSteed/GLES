@@ -3213,43 +3213,6 @@ namespace OpenTK.Graphics
         [DllImportAttribute("libGLESv2.dll", EntryPoint = "glGetIntegerv")]
         public static extern unsafe void GetInteger(GetPName pname, [OutAttribute] Int32* data);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         /// <summary>[requires: v2.0 or ES_VERSION_2_0]
         /// Return the information log for a program object
         /// </summary>

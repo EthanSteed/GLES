@@ -7,7 +7,7 @@ namespace GLES.Shader
     /// <summary>
     /// A basic shader. 
     /// </summary>
-    public class BasicShader : ShaderBase
+    public class BasicShaderView : ShaderBase
     {
         /// <summary>
         /// The vertex attrib location
@@ -42,10 +42,10 @@ namespace GLES.Shader
             try
             {
                 string fs;
-                EmbeddedResourceHelper.GetEmbeddedFileAsString(Assembly.GetExecutingAssembly(), "basicshader.frag", out fs);
+                EmbeddedResourceHelper.GetEmbeddedFileAsString(Assembly.GetExecutingAssembly(), "basicshaderView.frag", out fs);
 
                 string vs;
-                EmbeddedResourceHelper.GetEmbeddedFileAsString(Assembly.GetExecutingAssembly(), "basicshader.vert", out vs);
+                EmbeddedResourceHelper.GetEmbeddedFileAsString(Assembly.GetExecutingAssembly(), "basicshaderView.vert", out vs);
 
                 base.Initialise(fs, vs);
 

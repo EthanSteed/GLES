@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text.RegularExpressions;
 using GLES.Demo;
 using GLES.Shader;
 using OpenTK.Graphics;
@@ -21,7 +20,13 @@ namespace Test
         const int ROTATE_SPEED = 1;
         float FOV = (float)(3.14 / 2);
 
+        Vector3 cameraPos = Vector3.Zero;
+        Vector3 cameraFront = Vector3.Zero; 
+        Vector3 cameraUp = Vector3.Zero; 
+
         BasicShaderView test_Shader;
+
+        
 
         //Buffers
         int m_CombineBuffer, m_IndexBuffer;
@@ -39,6 +44,10 @@ namespace Test
             m_ProjectionMatrix = Matrix4.Identity;
             m_ModelViewMatrix = Matrix4.Identity;
             m_ViewMatrix = Matrix4.Identity;
+
+            cameraPos.Z = 3.0f;
+            cameraFront.Z = -1.0f;
+            cameraUp.Y = 1.0f;
         }
         ///<summary>
         ///Initialise
@@ -120,47 +129,47 @@ namespace Test
                -100.0f, -100.0f, 1.0f,    1.0f, 1.0f, 1.0f,
                */
 
-                -10f, -10f, -10f,    1.0f, 0.0f, 0.0f,     
-                 10f, -10f, -10f,    0.0f, 1.0f, 0.0f,     
-                 10f,  10f, -10f,    1.0f, 1.0f, 0.0f,    
-                 10f,  10f, -10f,    1.0f, 1.0f, 0.0f,   
-                -10f,  10f, -10f,    0.0f, 1.0f, 1.0f,   
-                -10f, -10f, -10f,    1.0f, 0.0f, 0.0f,   
+                -100f, -100f, -100f,    1.0f, 0.0f, 0.0f,     
+                 100f, -100f, -100f,    0.0f, 1.0f, 0.0f,     
+                 100f,  100f, -100f,    1.0f, 1.0f, 0.0f,    
+                 100f,  100f, -100f,    1.0f, 1.0f, 0.0f,   
+                -100f,  100f, -100f,    0.0f, 1.0f, 1.0f,   
+                -100f, -100f, -100f,    1.0f, 0.0f, 0.0f,   
 
-                -10f, -10f,  10f,    1.0f, 0.0f, 0.0f,   
-                 10f, -10f,  10f,    0.0f, 1.0f, 0.0f,   
-                 10f,  10f,  10f,    1.0f, 1.0f, 0.0f,   
-                 10f,  10f,  10f,    1.0f, 1.0f, 0.0f,   
-                -10f,  10f,  10f,    0.0f, 1.0f, 1.0f,  
-                -10f, -10f,  10f,    1.0f, 0.0f, 0.0f,  
+                -100f, -100f,  100f,    1.0f, 0.0f, 0.0f,   
+                 100f, -100f,  100f,    0.0f, 1.0f, 0.0f,   
+                 100f,  100f,  100f,    1.0f, 1.0f, 0.0f,   
+                 100f,  100f,  100f,    1.0f, 1.0f, 0.0f,   
+                -100f,  100f,  100f,    0.0f, 1.0f, 1.0f,  
+                -100f, -100f,  100f,    1.0f, 0.0f, 0.0f,  
                 
-                -10f,  10f,  10f,    1.0f, 0.0f, 0.0f,  
-                -10f,  10f, -10f,    0.0f, 1.0f, 0.0f,  
-                -10f, -10f, -10f,    1.0f, 1.0f, 0.0f,  
-                -10f, -10f, -10f,    1.0f, 1.0f, 0.0f,  
-                -10f, -10f,  10f,    0.0f, 1.0f, 1.0f,  
-                -10f,  10f,  10f,    1.0f, 0.0f, 0.0f,     
+                -100f,  100f,  100f,    1.0f, 0.0f, 0.0f,  
+                -100f,  100f, -100f,    0.0f, 1.0f, 0.0f,  
+                -100f, -100f, -100f,    1.0f, 1.0f, 0.0f,  
+                -100f, -100f, -100f,    1.0f, 1.0f, 0.0f,  
+                -100f, -100f,  100f,    0.0f, 1.0f, 1.0f,  
+                -100f,  100f,  100f,    1.0f, 0.0f, 0.0f,     
                 
-                 10f,  10f,  10f,    1.0f, 0.0f, 0.0f,     
-                 10f,  10f, -10f,    0.0f, 1.0f, 0.0f,     
-                 10f, -10f, -10f,    1.0f, 1.0f, 0.0f,     
-                 10f, -10f, -10f,    1.0f, 1.0f, 0.0f,     
-                 10f, -10f,  10f,    0.0f, 1.0f, 1.0f,     
-                 10f,  10f,  10f,    1.0f, 0.0f, 0.0f,     
+                 100f,  100f,  100f,    1.0f, 0.0f, 0.0f,     
+                 100f,  100f, -100f,    0.0f, 1.0f, 0.0f,     
+                 100f, -100f, -100f,    1.0f, 1.0f, 0.0f,     
+                 100f, -100f, -100f,    1.0f, 1.0f, 0.0f,     
+                 100f, -100f,  100f,    0.0f, 1.0f, 1.0f,     
+                 100f,  100f,  100f,    1.0f, 0.0f, 0.0f,     
 
-                -10f, -10f, -10f,    1.0f, 0.0f, 0.0f,     
-                 10f, -10f, -10f,    0.0f, 1.0f, 0.0f,     
-                 10f, -10f,  10f,    1.0f, 1.0f, 0.0f,     
-                 10f, -10f,  10f,    1.0f, 1.0f, 0.0f,     
-                -10f, -10f,  10f,    0.0f, 1.0f, 1.0f,     
-                -10f, -10f, -10f,    1.0f, 0.0f, 0.0f,     
+                -100f, -100f, -100f,    1.0f, 0.0f, 0.0f,     
+                 100f, -100f, -100f,    0.0f, 1.0f, 0.0f,     
+                 100f, -100f,  100f,    1.0f, 1.0f, 0.0f,     
+                 100f, -100f,  100f,    1.0f, 1.0f, 0.0f,     
+                -100f, -100f,  100f,    0.0f, 1.0f, 1.0f,     
+                -100f, -100f, -100f,    1.0f, 0.0f, 0.0f,     
                 
-                -10f,  10f, -10f,    1.0f, 0.0f, 0.0f,     
-                 10f,  10f, -10f,    0.0f, 1.0f, 0.0f,     
-                 10f,  10f,  10f,    1.0f, 1.0f, 0.0f,     
-                 10f,  10f,  10f,    1.0f, 1.0f, 0.0f,     
-                -10f,  10f,  10f,    0.0f, 1.0f, 1.0f,     
-                -10f,  10f, -10f,    1.0f, 0.0f, 0.0f,     
+                -100f,  100f, -100f,    1.0f, 0.0f, 0.0f,     
+                 100f,  100f, -100f,    0.0f, 1.0f, 0.0f,     
+                 100f,  100f,  100f,    1.0f, 1.0f, 0.0f,     
+                 100f,  100f,  100f,    1.0f, 1.0f, 0.0f,     
+                -100f,  100f,  100f,    0.0f, 1.0f, 1.0f,     
+                -100f,  100f, -100f,    1.0f, 0.0f, 0.0f,     
             };
 
             //bind the buffer
@@ -210,22 +219,16 @@ namespace Test
             switch (key)
             {
                 case 'w':
-                    Move.Y += MOVE_SPEED;
+                    cameraPos += MOVE_SPEED * cameraFront;
                     break;
                 case 's':
-                    Move.Y -= MOVE_SPEED;
+                    cameraPos -= MOVE_SPEED * cameraFront;
                     break;
                 case 'a':
-                    Move.X -= MOVE_SPEED;
+                    cameraPos -= Vector3.Normalize(Vector3.Cross(cameraFront, cameraUp)) * MOVE_SPEED;
                     break;
                 case 'd':
-                    Move.X += MOVE_SPEED;
-                    break;
-                case '[':
-                    Move.Z -= MOVE_SPEED;
-                    break;
-                case ']':
-                    Move.Z += MOVE_SPEED;
+                    cameraPos += Vector3.Normalize(Vector3.Cross(cameraFront, cameraUp)) * MOVE_SPEED;
                     break;
                 case '':
                     Finish();
@@ -237,18 +240,33 @@ namespace Test
 
             return (handled);
         }
-        public bool handleMouse()
+        public override bool handleMouse(float WheelY)
         {
             bool handled = true;
 
 
-            System.Windows.Input.ICommand mouse;
+            //System.Windows.Input.ICommand mouse;
+            //System.Windows.Forms.Cursor.Position
 
-            
+
+            FOV -= (float)WheelY;
+            if (FOV < 1.0f)
+                FOV = 1.0f;
+            if (FOV > 45.0f)
+                FOV = 45.0f;
 
             return handled;
         }
         int angle = 0;
+
+        void scroll_callback(double xoffset, double yoffset)
+        {
+            FOV -= (float)yoffset;
+            if (FOV < 1.0f)
+                FOV = 1.0f;
+            if (FOV > 45.0f)
+                FOV = 45.0f;
+        }
 
         Vector3 Move;
 
@@ -274,7 +292,7 @@ namespace Test
 
             m_ModelViewMatrix = Matrix4.Mult(m_ModelViewMatrix, Matrix4.CreateTranslation(Move));
 
-            m_ProjectionMatrix = Matrix4.Mult(m_ProjectionMatrix, Matrix4.CreateRotationX(angle));
+            m_ViewMatrix = Matrix4.LookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
             test_Shader.UpdateProjectionMatrix(m_ProjectionMatrix);
             test_Shader.UpdateModelViewMatrix(m_ModelViewMatrix);
