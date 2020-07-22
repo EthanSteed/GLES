@@ -61,6 +61,13 @@ namespace GLES.Demo
         {
             return false;
         }
+        /// <summary>
+        /// Allow demo to handle Mouse movement.
+        /// </summary>
+        public bool handleMouse(float WheelY)
+        {
+            return false;
+        }
 
         /// <summary>
         /// Render Method

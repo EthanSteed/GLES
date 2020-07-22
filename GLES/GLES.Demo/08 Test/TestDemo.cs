@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Drawing;
+//using System.Windows.Forms;
 using GLES.Demo;
 using GLES.Shader;
 using OpenTK.Graphics;
@@ -15,9 +17,9 @@ namespace Test
     {
         int m_Width, m_Height;
         float [] Index;
+        float[] cubePositions;
         const int FRAME_BUFFER_DIM = 500;
-        const float MOVE_SPEED = 10f;
-        const int ROTATE_SPEED = 1;
+        const float MOVE_SPEED = 0.5f;
         float FOV = (float)(3.14 / 2);
 
         Vector3 cameraPos = Vector3.Zero;
@@ -81,6 +83,7 @@ namespace Test
             // bind to our created frame buffer id for all of the following operations.
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, m_Fbo);
 
+            /*
             // create texture for color image data.
             GL.BindTexture(TextureTarget.Texture2D, m_FboColorTexture);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
@@ -93,7 +96,7 @@ namespace Test
 
             // attach to the frame buffer
             GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferSlot.ColorAttachment0, TextureTarget.Texture2D, m_FboColorTexture, 0);
-
+            */
 
             // create depth buffer
             GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, m_FboDepthBuffer);
@@ -129,47 +132,47 @@ namespace Test
                -100.0f, -100.0f, 1.0f,    1.0f, 1.0f, 1.0f,
                */
 
-                -100f, -100f, -100f,    1.0f, 0.0f, 0.0f,     
-                 100f, -100f, -100f,    0.0f, 1.0f, 0.0f,     
-                 100f,  100f, -100f,    1.0f, 1.0f, 0.0f,    
-                 100f,  100f, -100f,    1.0f, 1.0f, 0.0f,   
-                -100f,  100f, -100f,    0.0f, 1.0f, 1.0f,   
-                -100f, -100f, -100f,    1.0f, 0.0f, 0.0f,   
+                -1f, -1f, -1f,    1.0f, 0.0f, 0.0f,     
+                 1f, -1f, -1f,    0.0f, 1.0f, 0.0f,     
+                 1f,  1f, -1f,    1.0f, 1.0f, 0.0f,    
+                 1f,  1f, -1f,    1.0f, 1.0f, 0.0f,   
+                -1f,  1f, -1f,    0.0f, 1.0f, 1.0f,   
+                -1f, -1f, -1f,    1.0f, 0.0f, 0.0f,   
 
-                -100f, -100f,  100f,    1.0f, 0.0f, 0.0f,   
-                 100f, -100f,  100f,    0.0f, 1.0f, 0.0f,   
-                 100f,  100f,  100f,    1.0f, 1.0f, 0.0f,   
-                 100f,  100f,  100f,    1.0f, 1.0f, 0.0f,   
-                -100f,  100f,  100f,    0.0f, 1.0f, 1.0f,  
-                -100f, -100f,  100f,    1.0f, 0.0f, 0.0f,  
+                -1f, -1f,  1f,    1.0f, 0.0f, 0.0f,   
+                 1f, -1f,  1f,    0.0f, 1.0f, 0.0f,   
+                 1f,  1f,  1f,    1.0f, 1.0f, 0.0f,   
+                 1f,  1f,  1f,    1.0f, 1.0f, 0.0f,   
+                -1f,  1f,  1f,    0.0f, 1.0f, 1.0f,  
+                -1f, -1f,  1f,    1.0f, 0.0f, 0.0f,  
                 
-                -100f,  100f,  100f,    1.0f, 0.0f, 0.0f,  
-                -100f,  100f, -100f,    0.0f, 1.0f, 0.0f,  
-                -100f, -100f, -100f,    1.0f, 1.0f, 0.0f,  
-                -100f, -100f, -100f,    1.0f, 1.0f, 0.0f,  
-                -100f, -100f,  100f,    0.0f, 1.0f, 1.0f,  
-                -100f,  100f,  100f,    1.0f, 0.0f, 0.0f,     
+                -1f,  1f,  1f,    1.0f, 0.0f, 0.0f,  
+                -1f,  1f, -1f,    0.0f, 1.0f, 0.0f,  
+                -1f, -1f, -1f,    1.0f, 1.0f, 0.0f,  
+                -1f, -1f, -1f,    1.0f, 1.0f, 0.0f,  
+                -1f, -1f,  1f,    0.0f, 1.0f, 1.0f,  
+                -1f,  1f,  1f,    1.0f, 0.0f, 0.0f,     
                 
-                 100f,  100f,  100f,    1.0f, 0.0f, 0.0f,     
-                 100f,  100f, -100f,    0.0f, 1.0f, 0.0f,     
-                 100f, -100f, -100f,    1.0f, 1.0f, 0.0f,     
-                 100f, -100f, -100f,    1.0f, 1.0f, 0.0f,     
-                 100f, -100f,  100f,    0.0f, 1.0f, 1.0f,     
-                 100f,  100f,  100f,    1.0f, 0.0f, 0.0f,     
+                 1f,  1f,  1f,    1.0f, 0.0f, 0.0f,     
+                 1f,  1f, -1f,    0.0f, 1.0f, 0.0f,     
+                 1f, -1f, -1f,    1.0f, 1.0f, 0.0f,     
+                 1f, -1f, -1f,    1.0f, 1.0f, 0.0f,     
+                 1f, -1f,  1f,    0.0f, 1.0f, 1.0f,     
+                 1f,  1f,  1f,    1.0f, 0.0f, 0.0f,     
 
-                -100f, -100f, -100f,    1.0f, 0.0f, 0.0f,     
-                 100f, -100f, -100f,    0.0f, 1.0f, 0.0f,     
-                 100f, -100f,  100f,    1.0f, 1.0f, 0.0f,     
-                 100f, -100f,  100f,    1.0f, 1.0f, 0.0f,     
-                -100f, -100f,  100f,    0.0f, 1.0f, 1.0f,     
-                -100f, -100f, -100f,    1.0f, 0.0f, 0.0f,     
+                -1f, -1f, -1f,    1.0f, 0.0f, 0.0f,     
+                 1f, -1f, -1f,    0.0f, 1.0f, 0.0f,     
+                 1f, -1f,  1f,    1.0f, 1.0f, 0.0f,     
+                 1f, -1f,  1f,    1.0f, 1.0f, 0.0f,     
+                -1f, -1f,  1f,    0.0f, 1.0f, 1.0f,     
+                -1f, -1f, -1f,    1.0f, 0.0f, 0.0f,     
                 
-                -100f,  100f, -100f,    1.0f, 0.0f, 0.0f,     
-                 100f,  100f, -100f,    0.0f, 1.0f, 0.0f,     
-                 100f,  100f,  100f,    1.0f, 1.0f, 0.0f,     
-                 100f,  100f,  100f,    1.0f, 1.0f, 0.0f,     
-                -100f,  100f,  100f,    0.0f, 1.0f, 1.0f,     
-                -100f,  100f, -100f,    1.0f, 0.0f, 0.0f,     
+                -1f,  1f, -1f,    1.0f, 0.0f, 0.0f,     
+                 1f,  1f, -1f,    0.0f, 1.0f, 0.0f,     
+                 1f,  1f,  1f,    1.0f, 1.0f, 0.0f,     
+                 1f,  1f,  1f,    1.0f, 1.0f, 0.0f,     
+                -1f,  1f,  1f,    0.0f, 1.0f, 1.0f,     
+                -1f,  1f, -1f,    1.0f, 0.0f, 0.0f,     
             };
 
             //bind the buffer
@@ -186,6 +189,20 @@ namespace Test
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, m_IndexBuffer);
             GL.BufferData(BufferTarget.ElementArrayBuffer, new IntPtr(sizeof(float) * Index.Length), Index, BufferUsage.StaticDraw);
 
+            cubePositions = new float[] 
+                {
+                  00.0f,  00.0f,  00.0f,
+                  05.0f,  12.0f, -03.0f,
+                 -02.5f, -05.2f, -05.5f,
+                 -07.8f, -05.0f, -03.3f,
+                  05.4f, -00.4f, -07.5f,
+                 -02.7f,  07.0f, -22.5f,
+                  02.3f, -05.0f, -05.5f,
+                  02.5f,  05.0f, -05.5f,
+                  02.5f,  00.2f, -02.5f,
+                 -02.3f,  02.0f, -02.5f
+                };
+
         }
         ///<summary>
         ///Window Resize
@@ -200,7 +217,7 @@ namespace Test
             // -width/2, -height/2 will be in the bottom left.
             //m_ProjectionMatrix = Matrix4.CreateOrthographic(width, height, -1000.0f, 1000.0f);
 
-            m_ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, (width/height), 10.0f, 1000.0f);
+            m_ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, (width/height), 0.01f, 10000.0f);
 
             // Viewport says what part of the window are we going to render to. We will
             // just set this to the window size width. You could choose to just render to 
@@ -257,7 +274,6 @@ namespace Test
 
             return handled;
         }
-        int angle = 0;
 
         void scroll_callback(double xoffset, double yoffset)
         {
@@ -273,8 +289,10 @@ namespace Test
         ///<summary>
         ///Render
         ///</summary>
+        float angle = 0;
         public override void Render()
         {
+            
             // bind to our frame buffer
             //GL.BindFramebuffer(FramebufferTarget.Framebuffer, m_Fbo);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
@@ -288,38 +306,45 @@ namespace Test
             test_Shader.Begin();
             //reset the model view matrix
 
-            // reset the model view matrix.
+            //Loop for multi object
+            for (int i = 0; i < 10; i++)
+            {
+            //int i = 1;
+                Move.X = cubePositions[3 * i];
+                Move.Y = cubePositions[3 * i + 1];
+                Move.Z = cubePositions[3 * i + 2];
 
-            m_ModelViewMatrix = Matrix4.Mult(m_ModelViewMatrix, Matrix4.CreateTranslation(Move));
+                m_ModelViewMatrix = Matrix4.CreateTranslation(Move);
+                m_ModelViewMatrix = Matrix4.Mult(m_ModelViewMatrix, Matrix4.CreateRotationX(i + angle/100));
+                m_ModelViewMatrix = Matrix4.Mult(m_ModelViewMatrix, Matrix4.CreateRotationY(i + angle/100));
+                m_ModelViewMatrix = Matrix4.Mult(m_ModelViewMatrix, Matrix4.CreateRotationZ(i + angle/100));
 
-            m_ViewMatrix = Matrix4.LookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+                m_ViewMatrix = Matrix4.LookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
-            test_Shader.UpdateProjectionMatrix(m_ProjectionMatrix);
-            test_Shader.UpdateModelViewMatrix(m_ModelViewMatrix);
-            test_Shader.UpdateViewMatrix(m_ViewMatrix);
+                test_Shader.UpdateProjectionMatrix(m_ProjectionMatrix);
+                test_Shader.UpdateModelViewMatrix(m_ModelViewMatrix);
+                test_Shader.UpdateViewMatrix(m_ViewMatrix);
 
-            //ensure Vertex, color, Texture attrib
-            GL.EnableVertexAttribArray(test_Shader.VertexAttribLocation);
-            GL.EnableVertexAttribArray(test_Shader.ColorAttribLocation);
-            //GL.EnableVertexAttribArray(test_Shader.TextureCoordAttribLocation);
+                //ensure Vertex, color, Texture attrib
+                GL.EnableVertexAttribArray(test_Shader.VertexAttribLocation);
+                GL.EnableVertexAttribArray(test_Shader.ColorAttribLocation);
+                //GL.EnableVertexAttribArray(test_Shader.TextureCoordAttribLocation);
 
-            //Find Data
-            GL.BindBuffer(BufferTarget.ArrayBuffer, m_CombineBuffer);
-            GL.VertexAttribPointer(test_Shader.VertexAttribLocation, 3, VertexAttribPointerType.Float, true, sizeof(float) * 6, 0);
-            GL.VertexAttribPointer(test_Shader.ColorAttribLocation, 3, VertexAttribPointerType.Float, true, sizeof(float) * 6, sizeof(float) * 3);
-            //GL.VertexAttribPointer(test_Shader.TextureCoordAttribLocation, 2, VertexAttribPointerType.Float, true, sizeof(float) * 8, sizeof(float) * 6);
+                //Find Data
+                GL.BindBuffer(BufferTarget.ArrayBuffer, m_CombineBuffer);
+                GL.VertexAttribPointer(test_Shader.VertexAttribLocation, 3, VertexAttribPointerType.Float, true, sizeof(float) * 6, 0);
+                GL.VertexAttribPointer(test_Shader.ColorAttribLocation, 3, VertexAttribPointerType.Float, true, sizeof(float) * 6, sizeof(float) * 3);
+                //GL.VertexAttribPointer(test_Shader.TextureCoordAttribLocation, 2, VertexAttribPointerType.Float, true, sizeof(float) * 8, sizeof(float) * 6);
 
-            //draw
-            GL.DrawArrays(BeginMode.TriangleStrip, 0, 36);
-
-            test_Shader.End();
-
-            angle = angle++;
-            if(angle > 360)
+                //draw
+                GL.DrawArrays(BeginMode.TriangleStrip, 0, 36);
+            }
+            angle++;
+            if (angle >= 36000)
             {
                 angle = 0;
             }
-            Move.X = 0; Move.Y = 0; Move.Z = 0;
+            test_Shader.End();
         }
         ///<summary>
         ///Finsh

@@ -108,6 +108,11 @@ namespace GLES.Demo
 
         float angle = 0;
 
+        public bool handleMouse(float WheelY)
+        {
+            return false;
+        }
+
         /// <summary>
         /// Render
         /// </summary>
