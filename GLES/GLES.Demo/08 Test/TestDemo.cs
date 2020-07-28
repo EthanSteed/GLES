@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Drawing;
+using System.Windows.Forms;
+//using System.Windows.Input;
 //using System.Windows.Forms;
 using GLES.Demo;
 using GLES.Shader;
@@ -20,7 +21,12 @@ namespace Test
         float[] cubePositions;
         const int FRAME_BUFFER_DIM = 500;
         const float MOVE_SPEED = 0.5f;
-        float FOV = (float)(3.14 / 2);
+        float FOV = (float)(Math.PI / 2);
+
+        float MouseX, MouseY;
+
+        //MouseEventArgs MouseInterrupt;
+        MouseEventHandler MouseHandle;
 
         Vector3 cameraPos = Vector3.Zero;
         Vector3 cameraFront = Vector3.Zero; 
@@ -34,7 +40,7 @@ namespace Test
         int m_CombineBuffer, m_IndexBuffer;
 
         int m_Fbo;
-        int m_FboColorTexture;
+        //int m_FboColorTexture;
         int m_FboDepthBuffer;
         ///<summary>
         ///Constructor
@@ -64,7 +70,7 @@ namespace Test
 
             //FBO Depth
             GL.GenFramebuffers(1, out m_Fbo);
-            GL.GenTextures(1, out m_FboColorTexture);
+            //GL.GenTextures(1, out m_FboColorTexture);
             GL.GenRenderbuffers(1, out m_FboDepthBuffer);
 
             // create FBO
@@ -257,33 +263,26 @@ namespace Test
 
             return (handled);
         }
-        public override bool handleMouse(float WheelY)
+        /// <summary>
+        /// Allow demo to handle Mouse movement.
+        /// </summary>
+        public override bool HandleMouseMove(int Pos)
         {
-            bool handled = true;
-
-
-            //System.Windows.Input.ICommand mouse;
-            //System.Windows.Forms.Cursor.Position
-
-
-            FOV -= (float)WheelY;
-            if (FOV < 1.0f)
-                FOV = 1.0f;
-            if (FOV > 45.0f)
-                FOV = 45.0f;
-
-            return handled;
+            return true;
         }
 
-        void scroll_callback(double xoffset, double yoffset)
+        /// <summary>
+        /// Allow Demo to Handle Mouse Wheel
+        ///</summary>
+        public override bool HandleMouseWheel(int Delta)
         {
-            FOV -= (float)yoffset;
+            FOV -= (float)Delta/1000;
             if (FOV < 1.0f)
                 FOV = 1.0f;
-            if (FOV > 45.0f)
-                FOV = 45.0f;
+            if (FOV > Math.PI - 0.5f)
+                FOV = (float)Math.PI - 0.5f;
+            return true;
         }
-
         Vector3 Move;
 
         ///<summary>

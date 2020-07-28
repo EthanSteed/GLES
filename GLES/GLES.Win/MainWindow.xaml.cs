@@ -26,7 +26,27 @@ namespace GLES.Win
 
             this.Loaded += MainWindow_Loaded;
             this.TextInput += MainWindow_TextInput;
+
+            this.PreviewMouseMove += MainWindow_PreviewMouseMove;
+            this.PreviewMouseWheel += MainWindow_PreviewMouseWheel;
             
+            
+        }
+
+        private void MainWindow_PreviewMouseWheel(object sender, MouseWheelEventArgs W)
+        {
+            if (!m_CurrentDemo.HandleMouseWheel(W.Delta))
+            {
+
+            }
+        }
+
+        private void MainWindow_PreviewMouseMove(object sender, MouseEventArgs M)
+        {
+            if (!m_CurrentDemo.HandleMouseMove(M.))
+            {
+                M.OriginalSource
+            }
         }
 
 

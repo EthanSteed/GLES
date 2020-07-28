@@ -1,5 +1,6 @@
 ﻿using OpenTK.Graphics;
 using OpenTK.Maths;
+using System.Windows.Forms;
 
 namespace GLES.Demo
 {
@@ -51,10 +52,19 @@ namespace GLES.Demo
         /// <summary>
         /// Allow demo to handle Mouse movement.
         /// </summary>
-        public virtual bool handleMouse(float WheelY)
+        public virtual bool HandleMouseMove(int Pos)
         {
             return false;
         }
+
+        /// <summary>
+        /// Allow Demo to Handle Mouse Wheel
+        ///</summary>
+        public virtual bool HandleMouseWheel(int Delta)
+        {
+            return false;
+        }
+        /// <summary>
 
         /// <summary>
         /// Render

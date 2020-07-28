@@ -4,6 +4,7 @@ using OpenTK.Maths;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows.Forms;
 
 namespace GLES.Demo
 {
@@ -122,7 +123,15 @@ namespace GLES.Demo
             return false;
         }
 
-        public bool handleMouse(float WheelY)
+        public bool HandleMouseMove(int Pos)
+        {
+            return false;
+        }
+
+        /// <summary>
+        /// Allow Demo to Handle Mouse Wheel
+        ///</summary>
+        public bool HandleMouseWheel(int Delta)
         {
             return false;
         }

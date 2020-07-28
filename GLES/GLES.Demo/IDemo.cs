@@ -1,4 +1,6 @@
-﻿
+﻿using System;
+using System.Windows.Forms;
+
 namespace GLES.Demo
 {
     public interface IDemo
@@ -23,8 +25,12 @@ namespace GLES.Demo
         /// <summary>
         /// Allow demo to handle Mouse movement.
         /// </summary>
-        bool handleMouse(float WheelY);
+        bool HandleMouseMove(int Pos);
 
+        /// <summary>
+        /// Allow Demo to Handle Mouse Wheel
+        ///</summary>
+        bool HandleMouseWheel(int Delta);
         /// <summary>
         /// Render. This is called every frame. Hopefully more than 30 FPS
         /// </summary>
