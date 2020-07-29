@@ -123,7 +123,7 @@ namespace GLES.Demo
             return false;
         }
 
-        public bool HandleMouseMove(int Pos)
+        public bool HandleMouseMove(double Xpos, double Ypos)
         {
             return false;
         }

@@ -7,6 +7,7 @@ using System.Windows.Media;
 using GLES.Demo;
 using OpenTK.Graphics;
 
+
 namespace GLES.Win
 {
     /// <summary>
@@ -43,9 +44,11 @@ namespace GLES.Win
 
         private void MainWindow_PreviewMouseMove(object sender, MouseEventArgs M)
         {
-            if (!m_CurrentDemo.HandleMouseMove(M.))
+            Point XY = M.GetPosition(this.MainDrawArea);
+            
+            if (!m_CurrentDemo.HandleMouseMove(XY.X, XY.Y))
             {
-                M.OriginalSource
+                
             }
         }
 

@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
+using System.Windows;
+using System.Xml.Schema;
 //using System.Windows.Input;
 //using System.Windows.Forms;
 using GLES.Demo;
@@ -19,6 +22,7 @@ namespace Test
         int m_Width, m_Height;
         float [] Index;
         float[] cubePositions;
+        int BufferLen;
         const int FRAME_BUFFER_DIM = 500;
         const float MOVE_SPEED = 0.5f;
         float FOV = (float)(Math.PI / 2);
@@ -130,56 +134,27 @@ namespace Test
             //Create Buffer
             float[] Buffer = new float[]
             {
-               // Coordinates           //Colours           //Textures
-               /*
-                100.0f,  100.0f, 1.0f,    1.0f, 1.0f, 1.0f,
-                100.0f, -100.0f, 1.0f,    1.0f, 1.0f, 1.0f,
-               -100.0f,  100.0f, 1.0f,    1.0f, 1.0f, 1.0f,
-               -100.0f, -100.0f, 1.0f,    1.0f, 1.0f, 1.0f,
-               */
+                  //Coordinates      //Colours           
+                  1f,  1f,  1f,      1.0f, 1.0f, 1.0f,
+                  1f, -1f,  1f,      1.0f, 1.0f, 0.0f,
+                 -1f,  1f,  1f,      1.0f, 0.0f, 1.0f,
+                 -1f, -1f,  1f,      0.0f, 1.0f, 1.0f,
 
-                -1f, -1f, -1f,    1.0f, 0.0f, 0.0f,     
-                 1f, -1f, -1f,    0.0f, 1.0f, 0.0f,     
-                 1f,  1f, -1f,    1.0f, 1.0f, 0.0f,    
-                 1f,  1f, -1f,    1.0f, 1.0f, 0.0f,   
-                -1f,  1f, -1f,    0.0f, 1.0f, 1.0f,   
-                -1f, -1f, -1f,    1.0f, 0.0f, 0.0f,   
+                 -1f, -1f, -1f,      1.0f, 1.0f, 1.0f,
+                  1f, -1f,  1f,      1.0f, 1.0f, 0.0f,
+                  1f, -1f, -1f,      1.0f, 1.0f, 0.0f,
+                  1f,  1f,  1f,      1.0f, 1.0f, 1.0f,
 
-                -1f, -1f,  1f,    1.0f, 0.0f, 0.0f,   
-                 1f, -1f,  1f,    0.0f, 1.0f, 0.0f,   
-                 1f,  1f,  1f,    1.0f, 1.0f, 0.0f,   
-                 1f,  1f,  1f,    1.0f, 1.0f, 0.0f,   
-                -1f,  1f,  1f,    0.0f, 1.0f, 1.0f,  
-                -1f, -1f,  1f,    1.0f, 0.0f, 0.0f,  
-                
-                -1f,  1f,  1f,    1.0f, 0.0f, 0.0f,  
-                -1f,  1f, -1f,    0.0f, 1.0f, 0.0f,  
-                -1f, -1f, -1f,    1.0f, 1.0f, 0.0f,  
-                -1f, -1f, -1f,    1.0f, 1.0f, 0.0f,  
-                -1f, -1f,  1f,    0.0f, 1.0f, 1.0f,  
-                -1f,  1f,  1f,    1.0f, 0.0f, 0.0f,     
-                
-                 1f,  1f,  1f,    1.0f, 0.0f, 0.0f,     
-                 1f,  1f, -1f,    0.0f, 1.0f, 0.0f,     
-                 1f, -1f, -1f,    1.0f, 1.0f, 0.0f,     
-                 1f, -1f, -1f,    1.0f, 1.0f, 0.0f,     
-                 1f, -1f,  1f,    0.0f, 1.0f, 1.0f,     
-                 1f,  1f,  1f,    1.0f, 0.0f, 0.0f,     
-
-                -1f, -1f, -1f,    1.0f, 0.0f, 0.0f,     
-                 1f, -1f, -1f,    0.0f, 1.0f, 0.0f,     
-                 1f, -1f,  1f,    1.0f, 1.0f, 0.0f,     
-                 1f, -1f,  1f,    1.0f, 1.0f, 0.0f,     
-                -1f, -1f,  1f,    0.0f, 1.0f, 1.0f,     
-                -1f, -1f, -1f,    1.0f, 0.0f, 0.0f,     
-                
-                -1f,  1f, -1f,    1.0f, 0.0f, 0.0f,     
-                 1f,  1f, -1f,    0.0f, 1.0f, 0.0f,     
-                 1f,  1f,  1f,    1.0f, 1.0f, 0.0f,     
-                 1f,  1f,  1f,    1.0f, 1.0f, 0.0f,     
-                -1f,  1f,  1f,    0.0f, 1.0f, 1.0f,     
-                -1f,  1f, -1f,    1.0f, 0.0f, 0.0f,     
+                  1f,  1f, -1f,      1.0f, 1.0f, 1.0f,
+                 -1f,  1f,  1f,      1.0f, 0.0f, 1.0f,
+                 -1f,  1f, -1f,      1.0f, 0.0f, 1.0f,
+                 -1f, -1f, -1f,      1.0f, 0.0f, 1.0f,
+                    
+                  1f,  1f, -1f,      1.0f, 1.0f, 0.0f,
+                  1f, -1f, -1f,      0.0f, 0.0f, 1.0f,
             };
+
+            BufferLen = Buffer.Length / 6;
 
             //bind the buffer
             GL.BindBuffer(BufferTarget.ArrayBuffer, m_CombineBuffer);
@@ -266,8 +241,9 @@ namespace Test
         /// <summary>
         /// Allow demo to handle Mouse movement.
         /// </summary>
-        public override bool HandleMouseMove(int Pos)
+        public override bool HandleMouseMove(double Xpos, double Ypos)
         {
+
             return true;
         }
 
@@ -336,7 +312,7 @@ namespace Test
                 //GL.VertexAttribPointer(test_Shader.TextureCoordAttribLocation, 2, VertexAttribPointerType.Float, true, sizeof(float) * 8, sizeof(float) * 6);
 
                 //draw
-                GL.DrawArrays(BeginMode.TriangleStrip, 0, 36);
+                GL.DrawArrays(BeginMode.TriangleStrip, 0, BufferLen);
             }
             angle++;
             if (angle >= 36000)

@@ -35,6 +35,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GLES.Demo\GLES.Demo.csproj" />
+    <ProjectReference Include="..\GLES.PI\GLES.PI.csproj" />
     <ProjectReference Include="..\GLES\GLES.csproj" />
   </ItemGroup>
 

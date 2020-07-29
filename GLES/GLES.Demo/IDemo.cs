@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
+using System.Windows;
 
 namespace GLES.Demo
 {
@@ -25,7 +27,7 @@ namespace GLES.Demo
         /// <summary>
         /// Allow demo to handle Mouse movement.
         /// </summary>
-        bool HandleMouseMove(int Pos);
+        bool HandleMouseMove(double Xpos, double Ypos);
 
         /// <summary>
         /// Allow Demo to Handle Mouse Wheel
