@@ -9,7 +9,7 @@ using GLES.Demo;
 using GLES.Shader;
 using OpenTK.Graphics;
 using OpenTK.Maths;
-
+using System.Runtime.CompilerServices;
 
 namespace Test
 {
@@ -27,10 +27,16 @@ namespace Test
         const float MOVE_SPEED = 0.5f;
         float FOV = (float)(Math.PI / 2);
 
-        float MouseX, MouseY;
+
+        float sensitivity = 0.5f;
+
+        Double yaw = -90.0f; // yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
+        Double pitch = 0.0f;
+        Double MouseX = 800.0f / 2.0;
+        Double MouseY = 600.0 / 2.0;
 
         //MouseEventArgs MouseInterrupt;
-        MouseEventHandler MouseHandle;
+        bool FirstMouse = true;
 
         Vector3 cameraPos = Vector3.Zero;
         Vector3 cameraFront = Vector3.Zero; 
@@ -243,7 +249,42 @@ namespace Test
         /// </summary>
         public override bool HandleMouseMove(double Xpos, double Ypos)
         {
+            if (FirstMouse)
+            {
+                MouseX = Xpos;
+                MouseY = Ypos;
+                FirstMouse = false;
+            }
 
+            double xoffset = Xpos - MouseX;
+            double yoffset = MouseY - Ypos; // reversed since y-coordinates go from bottom to top
+            MouseX = Xpos;
+            MouseY = Ypos;
+
+            xoffset *= sensitivity;
+            yoffset *= sensitivity;
+
+            yaw += xoffset;
+            pitch += yoffset;
+
+            if (pitch > 89.0f)
+            {
+                pitch = 89.0f;
+            }
+            if (pitch < -89.0f)
+            {
+                pitch = -89.0f;
+            }
+
+            double XFront = Math.Cos(yaw * (Math.PI) / 180) * Math.Cos(pitch * (Math.PI) / 180);
+            double YFront = Math.Sin(pitch * (Math.PI) / 180);
+            double ZFront = Math.Sin(yaw * (Math.PI) / 180) * Math.Cos(pitch * (Math.PI) / 180);
+
+
+            cameraFront.X = (float)XFront;
+            cameraFront.Y = (float)YFront;
+            cameraFront.Z = (float)ZFront;
+            
             return true;
         }
 
