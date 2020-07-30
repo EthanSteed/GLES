@@ -25,7 +25,7 @@ namespace Test
         float[] cubePositions;
         int BufferLen;
         const int FRAME_BUFFER_DIM = 500;
-        const float MOVE_SPEED = 0.5f;
+        const float MOVE_SPEED = 0.1f;
         float FOV = (float)(Math.PI / 2);
 
         
