@@ -27,7 +27,7 @@ namespace GLES.Demo
         /// <summary>
         /// Allow demo to handle Mouse movement.
         /// </summary>
-        bool HandleMouseMove(double Xpos, double Ypos);
+        bool HandleMouseMove(double Xpos, double Ypos, IInputElement Window);
 
         /// <summary>
         /// Allow Demo to Handle Mouse Wheel

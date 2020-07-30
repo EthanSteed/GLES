@@ -45,9 +45,9 @@ namespace GLES.Win
         private void MainWindow_PreviewMouseMove(object sender, MouseEventArgs M)
         {
             Point XY = M.GetPosition(this.MainDrawArea);
-            Mouse.Capture(this.MainDrawArea);
+            
 
-            if (!m_CurrentDemo.HandleMouseMove(XY.X, XY.Y))
+            if (!m_CurrentDemo.HandleMouseMove(XY.X, XY.Y, this.MainDrawArea))
             {
 
             }

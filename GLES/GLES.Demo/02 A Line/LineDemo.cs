@@ -4,6 +4,7 @@ using OpenTK.Maths;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows;
 using System.Windows.Forms;
 
 namespace GLES.Demo
@@ -123,7 +124,7 @@ namespace GLES.Demo
             return false;
         }
 
-        public bool HandleMouseMove(double Xpos, double Ypos)
+        public bool HandleMouseMove(double Xpos, double Ypos, IInputElement Window)
         {
             return false;
         }

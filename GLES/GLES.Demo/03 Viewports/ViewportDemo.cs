@@ -3,6 +3,7 @@ using GLES.Shader;
 using System.Windows.Forms;
 using OpenTK.Graphics;
 using OpenTK.Maths;
+using System.Windows;
 
 namespace GLES.Demo
 {
@@ -62,7 +63,7 @@ namespace GLES.Demo
         {
             return false;
         }
-        public bool HandleMouseMove(double Xpos, double Ypos)
+        public bool HandleMouseMove(double Xpos, double Ypos, IInputElement Window)
         {
             return false;
         }

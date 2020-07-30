@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Windows;
+using System.Windows.Input;
 using System.Xml.Schema;
 //using System.Windows.Input;
 //using System.Windows.Forms;
@@ -10,6 +10,7 @@ using GLES.Shader;
 using OpenTK.Graphics;
 using OpenTK.Maths;
 using System.Runtime.CompilerServices;
+using System.Windows;
 
 namespace Test
 {
@@ -27,6 +28,7 @@ namespace Test
         const float MOVE_SPEED = 0.5f;
         float FOV = (float)(Math.PI / 2);
 
+        
 
         float sensitivity = 0.5f;
 
@@ -62,6 +64,8 @@ namespace Test
             m_ProjectionMatrix = Matrix4.Identity;
             m_ModelViewMatrix = Matrix4.Identity;
             m_ViewMatrix = Matrix4.Identity;
+
+            
 
             cameraPos.Z = 3.0f;
             cameraFront.Z = -1.0f;
@@ -247,10 +251,13 @@ namespace Test
         /// <summary>
         /// Allow demo to handle Mouse movement.
         /// </summary>
-        public override bool HandleMouseMove(double Xpos, double Ypos)
+        public override bool HandleMouseMove(double Xpos, double Ypos, IInputElement Window)
         {
+            
             if (FirstMouse)
             {
+                Mouse.Capture(Window);
+
                 MouseX = Xpos;
                 MouseY = Ypos;
                 FirstMouse = false;
@@ -294,10 +301,10 @@ namespace Test
         public override bool HandleMouseWheel(int Delta)
         {
             FOV -= (float)Delta/1000;
-            if (FOV < 1.0f)
-                FOV = 1.0f;
-            if (FOV > Math.PI - 0.5f)
-                FOV = (float)Math.PI - 0.5f;
+            if (FOV < Math.PI/180)
+                FOV = (float)Math.PI/180;
+            if (FOV > Math.PI/2)
+                FOV = (float)Math.PI/2;
             return true;
         }
         Vector3 Move;

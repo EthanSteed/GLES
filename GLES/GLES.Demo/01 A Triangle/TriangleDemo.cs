@@ -107,7 +107,7 @@ namespace GLES.Demo
             return false;
         }
 
-        public bool HandleMouseMove(double Xpos, double Ypos)
+        public bool HandleMouseMove(double Xpos, double Ypos, IInputElement Window)
         {
             return false;
         }

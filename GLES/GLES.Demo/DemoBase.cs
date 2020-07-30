@@ -56,7 +56,7 @@ namespace GLES.Demo
         /// <summary>
         /// Allow demo to handle Mouse movement.
         /// </summary>
-        public virtual bool HandleMouseMove(double Xpos, double Ypos)
+        public virtual bool HandleMouseMove(double Xpos, double Ypos, IInputElement Window)
         {
             return false;
         }
