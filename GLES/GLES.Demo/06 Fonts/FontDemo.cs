@@ -62,6 +62,7 @@ namespace GLES.Demo
                 LoadFontChars(10, 75, "This has got some こんにちは unicode characters");
                 LoadFontChars(10, 100, "But you have to make sure you use a unicode font set");
                 LoadFontChars(10, 125, "We are using arialuni.ttf");
+                LoadFontChars(10, 150, "Testing amenedment");
             }
             else
             {

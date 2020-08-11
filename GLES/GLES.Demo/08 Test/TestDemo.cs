@@ -21,11 +21,11 @@ namespace Test
     public class TestDemo : DemoBase
     {
         int m_Width, m_Height;
-        float [] Index;
+        float[] Index;
         float[] cubePositions;
         int BufferLen;
         const int FRAME_BUFFER_DIM = 500;
-        const float MOVE_SPEED = 0.1f;
+        const float MOVE_SPEED = 0.05f;
         float FOV = (float)(Math.PI / 2);
 
         
@@ -39,6 +39,7 @@ namespace Test
 
         //MouseEventArgs MouseInterrupt;
         bool FirstMouse = true;
+        bool MouseCap = false;
 
         Vector3 cameraPos = Vector3.Zero;
         Vector3 cameraFront = Vector3.Zero; 
@@ -253,11 +254,10 @@ namespace Test
         /// </summary>
         public override bool HandleMouseMove(double Xpos, double Ypos, IInputElement Window)
         {
-            
+            //Mouse.Capture(Window);
+            MouseCap = Window.CaptureMouse();
             if (FirstMouse)
             {
-                Mouse.Capture(Window);
-
                 MouseX = Xpos;
                 MouseY = Ypos;
                 FirstMouse = false;

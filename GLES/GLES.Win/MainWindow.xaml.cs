@@ -49,7 +49,7 @@ namespace GLES.Win
 
             if (!m_CurrentDemo.HandleMouseMove(XY.X, XY.Y, this.MainDrawArea))
             {
-
+                
             }
         }
 
