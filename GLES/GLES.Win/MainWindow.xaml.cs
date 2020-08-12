@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
@@ -44,8 +45,11 @@ namespace GLES.Win
 
         private void MainWindow_PreviewMouseMove(object sender, MouseEventArgs M)
         {
-            Point XY = M.GetPosition(this.MainDrawArea);
-            
+            System.Windows.Point XY = M.GetPosition(this.MainDrawArea);
+
+            System.Windows.Forms.Cursor.Hide();
+            System.Windows.Forms.Cursor.Clip = new Rectangle(this.MainDrawArea., this.);
+            this.MainDrawArea.CaptureMouse();
 
             if (!m_CurrentDemo.HandleMouseMove(XY.X, XY.Y, this.MainDrawArea))
             {

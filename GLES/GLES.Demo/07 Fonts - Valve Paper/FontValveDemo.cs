@@ -202,10 +202,10 @@ namespace GLES.Demo
                     m_AlphaTest = 0.6f;
                     break;
                 case 't':
-                    m_Scale = m_Scale * 2f;
+                    m_Scale = m_Scale * 1.1f;
                     break;
                 case 'y':
-                    m_Scale = m_Scale * 0.5f;
+                    m_Scale = m_Scale * 0.9f;
                     break;
 
 

@@ -37,6 +37,8 @@ namespace Test
         Double MouseX = 800.0f / 2.0;
         Double MouseY = 600.0 / 2.0;
 
+        
+
         //MouseEventArgs MouseInterrupt;
         bool FirstMouse = true;
         bool MouseCap = false;
