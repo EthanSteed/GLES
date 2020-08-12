@@ -18,6 +18,9 @@ namespace GLES.Win
     {
         WinEGLHelper m_EglHelper;
 
+        System.Drawing.Size WinSize;
+        System.Drawing.Point WinLoc;
+
         IDemo m_CurrentDemo;
 
         public MainWindow()
@@ -47,8 +50,14 @@ namespace GLES.Win
         {
             System.Windows.Point XY = M.GetPosition(this.MainDrawArea);
 
+            WinSize.Width = (int)this.MainDrawArea.Width;
+            WinSize.Height = (int)this.MainDrawArea.Height;
+
+            WinLoc.X = ;
+            WinLoc.Y = ;
+
             System.Windows.Forms.Cursor.Hide();
-            System.Windows.Forms.Cursor.Clip = new Rectangle(this.MainDrawArea., this.);
+            System.Windows.Forms.Cursor.Clip = new Rectangle(WinLoc,WinSize);
             this.MainDrawArea.CaptureMouse();
 
             if (!m_CurrentDemo.HandleMouseMove(XY.X, XY.Y, this.MainDrawArea))
