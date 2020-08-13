@@ -105,6 +105,10 @@ namespace GLES.PI
                     {
                         m_Exit = true;
                     }
+                    if(key.KeyChar == '')
+                    {
+                        System.Environment.Exit(1);
+                    }
                     else
                     // choose demo.
                     {
