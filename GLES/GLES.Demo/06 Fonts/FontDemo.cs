@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using GLES.Fonts;
@@ -91,6 +92,10 @@ namespace GLES.Demo
         /// <summary>
         /// Load characters
         /// </summary>
+        int Cache = 0;
+        GlyphInfo[] GlyphCache;
+        char[] GlyphCharCache;
+        GlyphCache.
         private void LoadFontChars(int x, int y, string msg)
         {
             // Loop each character in the message
@@ -98,7 +103,28 @@ namespace GLES.Demo
             {
                 // Try and get the data.
                 GlyphInfo glyph;
-                if (FreeType.TryGetCharBitmap(c, out glyph))
+                int CacheCheck = 0;
+                
+                for(int i = 0; i <100 ; i++)
+                {
+                    if(GlyphCharCache[i] == c)
+                    {
+                        if (GlyphCache[i].BitmapData.Length > 0)
+                        {
+                            unsafe
+                            {
+                                fixed (byte* p = GlyphCache[i].BitmapData)
+                                {
+                                    // Use text sub image 2D to write this bitmap data into our texture.
+                                    GL.TexSubImage2D(TextureTarget.Texture2D, 0, x + GlyphCache[i].X, y - GlyphCache[i].Y, GlyphCache[i].Width, GlyphCache[i].Height, PixelFormat.Alpha, PixelType.UnsignedByte, (IntPtr)p);
+                                }
+                            }
+
+                        }
+                        CacheCheck = 1;
+                    }
+                }
+                if (CacheCheck == 0 && FreeType.TryGetCharBitmap(c, out glyph))
                 {
                     // load bitmap data if any available (space doesn't have one of course).
                     if (glyph.BitmapData.Length > 0)
@@ -112,6 +138,14 @@ namespace GLES.Demo
                             }
                         }
 
+                    }
+
+                    GlyphCache[Cache] = glyph;
+                    GlyphCharCache[Cache] = c;
+                    Cache++;
+                    if(Cache >= 100)
+                    {
+                        Cache = 0;
                     }
 
                     // move on to the next character.
